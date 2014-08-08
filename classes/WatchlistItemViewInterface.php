@@ -13,5 +13,7 @@ namespace HeimrichHannot\Watchlist;
 
 interface WatchlistItemViewInterface
 {
-	public function generate(WatchlistItem $item);
+	public function generate(WatchlistItem $item, $strHash);
+
+	public function generateActions(WatchlistItem $item, $strHash);
 }

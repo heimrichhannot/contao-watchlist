@@ -15,13 +15,21 @@ class WatchlistItemView
 {
 	private $_strategy;
 
+	protected $strHash;
+
 	public function __construct(WatchlistItemViewInterface $strategy)
 	{
 		$this->_strategy = $strategy;
 	}
 
-	public function generate(WatchlistItem $item)
+	public function generate(WatchlistItem $item, $strHash)
 	{
-		return $this->_strategy->generate($item);
+		return $this->_strategy->generate($item, $strHash);
+	}
+
+
+	public function generateActions(WatchlistItem $item, $strHash)
+	{
+		return $this->_strategy->generateActions($item, $strHash);
 	}
 }

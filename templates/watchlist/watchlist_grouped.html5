@@ -1,12 +1,12 @@
 <?php if ($this->empty): ?>
 	<p><?php echo $this->empty; ?></p>
 <?php else: ?>
-	<ul>
+	<ul class="watchlist">
 		<?php foreach ($this->items as $group => $childrens): ?>
-			<li class="group"><span class="page"><?php echo $childrens['page']->title; ?></span>
-				<ul>
+			<li class="group"><?php echo $childrens['page']; ?>
+				<ul class="children">
 					<?php foreach ($childrens['items'] as $id => $item): ?>
-						<li class=""><?php echo $item; ?></li>
+						<?php echo $item; ?>
 					<?php endforeach; ?>
 				</ul>
 			</li>

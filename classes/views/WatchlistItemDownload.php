@@ -13,7 +13,7 @@ namespace HeimrichHannot\Watchlist;
 
 class WatchlistItemDownload implements WatchlistItemViewInterface
 {
-	public function generate(WatchlistItem $item)
+	public function generate(WatchlistItem $item, $strHash)
 	{
 		$objContent = \ContentModel::findByPk($item->getId());
 
@@ -24,6 +24,18 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 		$objT = new \FrontendTemplate('watchlist_view_download');
 		$objT->setData($objContent->row());
 		$objT->item = $objItem->generate();
+		$objT->actions = $this->generateActions($item, $strHash);
+
+		return $objT->parse();
+	}
+
+	public function generateActions(WatchlistItem $item, $strHash)
+	{
+		global $objPage;
+
+		$objT = new \FrontendTemplate('watchlist_view_actions');
+
+		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&hash=' . $strHash . '&id=' . $item->getId());
 
 		return $objT->parse();
 	}

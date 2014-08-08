@@ -13,6 +13,8 @@ namespace HeimrichHannot\Watchlist;
 
 class Watchlist extends \Controller implements \Iterator, \Countable
 {
+	protected static $objInstance;
+
 	/**
 	 * @var array stores the list of items in the watchlist
 	 */
@@ -23,56 +25,41 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	 */
 	protected $position = 0;
 
+	/**
+	 * @var int for storing the IDs, as a convenience
+	 */
 	protected $ids;
-
-	protected static $strCookie = WATCHLIST_FE_COOKIE;
-
-	protected $strIp;
 
 	protected $strHash;
 
 	protected function __construct()
 	{
-		$this->strIp = \Environment::get('ip');
-		$this->generateSession();
-	}
-
-	public static function getInstance()
-	{
-		if (($strCookie = \Input::cookie(static::$strCookie)) != '' && \Session::getInstance()->get(WATCHLIST_SESSION)) {
-			$objInstance = unserialize(\Session::getInstance()->get(WATCHLIST_SESSION));
-			return $objInstance;
-		}
-
-		return new static();
+		$this->strHash = sha1(session_id() . (!\Config::get('disableIpCheck') ? \Environment::get('ip') : '') . WATCHLIST_SESSION);
 	}
 
 	/**
-	 * Store the object in session
+	 * Session Singleton
+	 * Load watchlist from Session if exists
+	 * @return mixed|static
+	 */
+	public static function getInstance()
+	{
+		$objInstance = new static();
+
+		if (\Session::getInstance()->get(WATCHLIST_SESSION)){
+			$objInstance = unserialize(\Session::getInstance()->get(WATCHLIST_SESSION));
+		}
+
+		return $objInstance;
+	}
+
+	/**
+	 * Store the watchlist object in session
 	 */
 	public function __destruct()
 	{
 		$this->position = 0;
 		\Session::getInstance()->set(WATCHLIST_SESSION, serialize($this));
-	}
-
-	protected function generateSession()
-	{
-		$time = time();
-
-		// Generate the cookie hash
-		$this->strHash = sha1(session_id() . (!\Config::get('disableIpCheck') ? $this->strIp : '') . static::$strCookie);
-
-		// Clean up old sessions
-		\Database::getInstance()->prepare("DELETE FROM tl_session WHERE tstamp<? OR hash=?")
-			->execute(($time - \Config::get('sessionTimeout')), $this->strHash);
-
-		// Save the session in the database
-		\Database::getInstance()->prepare("INSERT INTO tl_session (pid, tstamp, name, sessionID, ip, hash) VALUES (?, ?, ?, ?, ?, ?)")
-			->execute(FE_USER_LOGGED_IN ? $this->User->id : 0, $time, static::$strCookie, session_id(), $this->strIp, $this->strHash);
-
-		// Set the authentication cookie
-		$this->setCookie(static::$strCookie, $this->strHash, ($time + WATCHLIST_FE_COOKIE_LIFETIME), null, null, false, true);
 	}
 
 	/**
@@ -98,8 +85,8 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 			return $objT->parse();
 		}
 
-		$arrItems = array();
-		$arrPids  = array();
+		$arrItems   = array();
+		$arrParents = array();
 
 		$i = 0;
 
@@ -109,32 +96,136 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 			if (!class_exists($strClass)) continue;
 
+			++$i;
+
 			$strategy = new $strClass();
 
 			$view = new WatchlistItemView($strategy);
 
-			$strClass = ($i = 0 ? : 'first') . ($i == $this->count() ? : 'last') . ($i % 2 == 0 ? 'even' : 'odd');
+			$cssClass = trim(($i == 1 ? 'first ' : '') . ($i == $this->count() ? 'last ' : '') . ($i % 2 == 0 ? 'odd ' : 'even '));
 
-			if ($grouped) {
-				if (!isset($arrItems[$item->getPid()])) {
-					$arrItems[$item->getPid()]['page'] = \PageModel::findByPk($item->getPid());
-				}
+			if (!isset($arrParents[$item->getPid()])) {
 
-				$arrItems[$item->getPid()]['items'][$id] = $view->generate($item);
-			} else {
-				$arrItems[$id] = $view->generate($item);
-				if (!isset($arrPids[$item->getPid()])) {
-					$arrPids[$item->getPid()] = \PageModel::findByPk($item->getPid());
-				}
+				$objParentT                  = new \FrontendTemplate('watchlist_parents');
+				$objParentT->items           = $this->generateParentList(\PageModel::findByPk($item->getPid()));
+				$arrParents[$item->getPid()] = $objParentT->parse();
+
 			}
 
-			$i++;
+			$objItemT           = new \FrontendTemplate('watchlist_item');
+			$objItemT->cssClass = $cssClass;
+			$objItemT->item     = $view->generate($item, $this->strHash);
+
+
+			if ($grouped) {
+				$arrItems[$item->getPid()]['page']       = $arrParents[$item->getPid()];
+				$arrItems[$item->getPid()]['items'][$id] = $objItemT->parse();
+
+			} else {
+				$arrPids[$item->getPid()] = $arrParents[$item->getPid()];
+				$arrItems[$id]            = $objItemT->parse();
+			}
 		}
 
-		$objT->pids  = $arrPids;
+		$objT->pids  = array_keys($arrParents);
 		$objT->items = $arrItems;
 
 		return $objT->parse();
+	}
+
+	protected function generateParentList($objPage)
+	{
+		$type   = null;
+		$pageId = $objPage->id;
+		$pages  = array($objPage->row());
+		$items  = array();
+
+		// Get all pages up to the root page
+		$objPages = \PageModel::findParentsById($objPage->pid);
+
+		if ($objPages !== null) {
+			while ($pageId > 0 && $type != 'root' && $objPages->next()) {
+				$type    = $objPages->type;
+				$pageId  = $objPages->pid;
+				$pages[] = $objPages->row();
+			}
+		}
+
+		// Get the first active regular page and display it instead of the root page
+		if ($type == 'root') {
+			$objFirstPage = \PageModel::findFirstPublishedByPid($objPages->id);
+
+			$items[] = array
+			(
+				'isRoot'   => true,
+				'isActive' => false,
+				'href'     => (($objFirstPage !== null) ? $this->generateFrontendUrl($objFirstPage->row()) : \Environment::get('base')),
+				'title'    => specialchars($objPages->pageTitle ? : $objPages->title, true),
+				'link'     => $objPages->title,
+				'data'     => $objFirstPage->row(),
+				'class'    => ''
+			);
+
+			array_pop($pages);
+		}
+
+		// Build the breadcrumb menu
+		for ($i = (count($pages) - 1); $i > 0; $i--) {
+			if (($pages[$i]['hide'] && !$this->showHidden) || (!$pages[$i]['published'] && !BE_USER_LOGGED_IN)) {
+				continue;
+			}
+
+			// Get href
+			switch ($pages[$i]['type']) {
+				case 'redirect':
+					$href = $pages[$i]['url'];
+
+					if (strncasecmp($href, 'mailto:', 7) === 0) {
+						$href = \String::encodeEmail($href);
+					}
+					break;
+
+				case 'forward':
+					$objNext = \PageModel::findPublishedById($pages[$i]['jumpTo']);
+
+					if ($objNext !== null) {
+						$href = $this->generateFrontendUrl($objNext->row());
+						break;
+					}
+				// DO NOT ADD A break; STATEMENT
+
+				default:
+					$href = $this->generateFrontendUrl($pages[$i]);
+					break;
+			}
+
+			$items[] = array
+			(
+				'isRoot'   => false,
+				'isActive' => false,
+				'href'     => $href,
+				'title'    => specialchars($pages[$i]['pageTitle'] ? : $pages[$i]['title'], true),
+				'link'     => $pages[$i]['title'],
+				'data'     => $pages[$i],
+				'class'    => ''
+			);
+		}
+
+		// Active page
+		$items[] = array
+		(
+			'isRoot'   => false,
+			'isActive' => true,
+			'href'     => $this->generateFrontendUrl($pages[0]),
+			'title'    => specialchars($pages[0]['pageTitle'] ? : $pages[0]['title']),
+			'link'     => $pages[0]['title'],
+			'data'     => $pages[0],
+			'class'    => 'last'
+		);
+
+		$items[0]['class'] = 'first';
+
+		return $items;
 	}
 
 	/**
@@ -174,13 +265,11 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 	/**
 	 * Removes an item from the cart
-	 * @param WatchlistItem $item
+	 * @param int $id of the item
 	 */
-	public function deleteItem(WatchlistItem $item)
+	public function deleteItem($id)
 	{
 		// Need the unique item id:
-		$id = $item->getId();
-
 		// Remove it:
 		if (isset($this->items[$id])) {
 			unset($this->items[$id]);
@@ -192,6 +281,11 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 			// Recreate that array to prevent holes:
 			$this->ids = array_values($this->ids);
 		}
+	}
+
+	public function getHash()
+	{
+		return $this->strHash;
 	}
 
 	/**

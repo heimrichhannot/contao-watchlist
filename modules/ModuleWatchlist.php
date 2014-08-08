@@ -29,6 +29,11 @@ class ModuleWatchlist extends \Module
 			return $objTemplate->parse();
 		}
 
+		if(\Input::get('act') && \Input::get('hash') == Watchlist::getInstance()->getHash())
+		{
+			$this->runAction();
+		}
+
 		return parent::generate();
 	}
 
@@ -39,10 +44,51 @@ class ModuleWatchlist extends \Module
 //		$objContent = \ContentModel::findByPk('1397');
 //
 //		$item = new WatchlistItem($objContent->id, $objPage->id, $objContent->type);
-
+//
+//		Watchlist::getInstance()->addItem($item);
+//
+//		$objContent = \ContentModel::findByPk('1399');
+//
+//		$item = new WatchlistItem($objContent->id, $objPage->id, $objContent->type);
+//
+//		Watchlist::getInstance()->addItem($item);
+//
+//		$objContent = \ContentModel::findByPk('1400');
+//
+//		$item = new WatchlistItem($objContent->id, $objPage->id, $objContent->type);
+//
 //		Watchlist::getInstance()->addItem($item);
 
 		$this->Template->watchlist = Watchlist::getInstance()->generate();
+	}
 
+	protected function runAction()
+	{
+		global $objPage;
+
+		$output = '';
+
+		switch(\Input::get('act'))
+		{
+			case WATCHLIST_ACT_DELETE:
+				Watchlist::getInstance()->deleteItem(\Input::get('id'));
+			break;
+
+			case WATCHLIST_ACT_ADD:
+				$objContent = \ContentModel::findByPk(\Input::get('id'));
+				if($objContent === null) break;
+				$item = new WatchlistItem($objContent->id, $objPage->id, $objContent->type);
+				Watchlist::getInstance()->addItem($item);
+			break;
+		}
+
+		// if ajax -> return the list content
+		if(\Environment::get('isAjaxRequest'))
+		{
+			die(json_encode(Watchlist::getInstance()->generate()));
+		}
+
+		// no js support
+		\Controller::redirect(\Controller::generateFrontendUrl($objPage->row()));
 	}
 } 
