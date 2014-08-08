@@ -34,17 +34,15 @@ class ModuleWatchlist extends \Module
 
 	protected function compile()
 	{
-		$watchlist = new Watchlist();
-
 		global $objPage;
 
-		$objContent = \ContentModel::findByPk('1397');
+//		$objContent = \ContentModel::findByPk('1397');
+//
+//		$item = new WatchlistItem($objContent->id, $objPage->id, $objContent->type);
 
-		$item = new WatchlistItem($objContent->id, $objPage->id, $objContent->type);
+//		Watchlist::getInstance()->addItem($item);
 
-		$watchlist->addItem($item);
-
-		$this->Template->watchlist = $watchlist->generate();
+		$this->Template->watchlist = Watchlist::getInstance()->generate();
 
 	}
 } 

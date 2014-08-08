@@ -11,27 +11,74 @@
 namespace HeimrichHannot\Watchlist;
 
 
-use Contao\FrontendTemplate;
-
-class Watchlist implements \Iterator, \Countable
+class Watchlist extends \Controller implements \Iterator, \Countable
 {
 	/**
 	 * @var array stores the list of items in the watchlist
 	 */
-	protected $items = array();
+	protected $items;
 
 	/**
 	 * @var int for tracking iterations
 	 */
 	protected $position = 0;
 
-	protected $ids = array();
+	protected $ids;
 
-	function __construct()
+	protected static $strCookie = WATCHLIST_FE_COOKIE;
+
+	protected $strIp;
+
+	protected $strHash;
+
+	protected function __construct()
 	{
-		$this->items = array();
-		$this->ids   = array();
+		$this->strIp = \Environment::get('ip');
+		$this->generateSession();
 	}
+
+	public static function getInstance()
+	{
+		if (($strCookie = \Input::cookie(static::$strCookie)) != '' && \Session::getInstance()->get(WATCHLIST_SESSION)) {
+			$objInstance = unserialize(\Session::getInstance()->get(WATCHLIST_SESSION));
+			return $objInstance;
+		}
+
+		return new static();
+	}
+
+	/**
+	 * Store the object in session
+	 */
+	public function __destruct()
+	{
+		$this->position = 0;
+		\Session::getInstance()->set(WATCHLIST_SESSION, serialize($this));
+	}
+
+	protected function generateSession()
+	{
+		$time = time();
+
+		// Generate the cookie hash
+		$this->strHash = sha1(session_id() . (!\Config::get('disableIpCheck') ? $this->strIp : '') . static::$strCookie);
+
+		// Clean up old sessions
+		\Database::getInstance()->prepare("DELETE FROM tl_session WHERE tstamp<? OR hash=?")
+			->execute(($time - \Config::get('sessionTimeout')), $this->strHash);
+
+		// Save the session in the database
+		\Database::getInstance()->prepare("INSERT INTO tl_session (pid, tstamp, name, sessionID, ip, hash) VALUES (?, ?, ?, ?, ?, ?)")
+			->execute(FE_USER_LOGGED_IN ? $this->User->id : 0, $time, static::$strCookie, session_id(), $this->strIp, $this->strHash);
+
+		// Set the authentication cookie
+		$this->setCookie(static::$strCookie, $this->strHash, ($time + WATCHLIST_FE_COOKIE_LIFETIME), null, null, false, true);
+	}
+
+	/**
+	 * Prevent cloning of the object (Singleton)
+	 */
+	final public function __clone(){}
 
 	/**
 	 * @return bool indicating if the watchlist is empty
@@ -41,9 +88,9 @@ class Watchlist implements \Iterator, \Countable
 		return (empty($this->items));
 	}
 
-	public function generate()
+	public function generate($grouped = true)
 	{
-		$objT = new \FrontendTemplate('watchlist');
+		$objT = new \FrontendTemplate($grouped ? 'watchlist_grouped' : 'watchlist');
 
 		if ($this->isEmpty()) {
 			$objT->empty = 'No items';
@@ -52,18 +99,39 @@ class Watchlist implements \Iterator, \Countable
 		}
 
 		$arrItems = array();
+		$arrPids  = array();
 
-		foreach ($this->items as $id => $item) {
-			switch ($item->getType()) {
-				case 'download':
-					$strategy = new WatchlistItemDownload();
-					break;
+		$i = 0;
+
+		while (list($id, $item) = each($this->items)) {
+			// get view class by type
+			$strClass = $GLOBALS['WLV'][$item->getType()];
+
+			if (!class_exists($strClass)) continue;
+
+			$strategy = new $strClass();
+
+			$view = new WatchlistItemView($strategy);
+
+			$strClass = ($i = 0 ? : 'first') . ($i == $this->count() ? : 'last') . ($i % 2 == 0 ? 'even' : 'odd');
+
+			if ($grouped) {
+				if (!isset($arrItems[$item->getPid()])) {
+					$arrItems[$item->getPid()]['page'] = \PageModel::findByPk($item->getPid());
+				}
+
+				$arrItems[$item->getPid()]['items'][$id] = $view->generate($item);
+			} else {
+				$arrItems[$id] = $view->generate($item);
+				if (!isset($arrPids[$item->getPid()])) {
+					$arrPids[$item->getPid()] = \PageModel::findByPk($item->getPid());
+				}
 			}
 
-			$view          = new WatchlistItemView($strategy);
-			$arrItems[$id] = $view->generate($item);
+			$i++;
 		}
 
+		$objT->pids  = $arrPids;
 		$objT->items = $arrItems;
 
 		return $objT->parse();
@@ -90,7 +158,6 @@ class Watchlist implements \Iterator, \Countable
 			$this->items[$id] = $item;
 			$this->ids[]      = $id; // Store the id, too!
 		}
-
 	}
 
 	/**
@@ -182,4 +249,4 @@ class Watchlist implements \Iterator, \Countable
 	{
 		return count($this->items);
 	}
-} 
+}

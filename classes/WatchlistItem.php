@@ -30,6 +30,11 @@ class WatchlistItem
 		return $this->id;
 	}
 
+	public function getPid()
+	{
+		return $this->pid;
+	}
+
 	public function generate()
 	{
 		return $this->pid;

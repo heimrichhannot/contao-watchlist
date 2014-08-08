@@ -47,6 +47,7 @@ ClassLoader::addClasses(array
 TemplateLoader::addFiles(array
 (
 	'mod_watchlist'           => 'system/modules/watchlist/templates/modules',
+	'watchlist_grouped'       => 'system/modules/watchlist/templates/modules',
 	'watchlist'               => 'system/modules/watchlist/templates/modules',
 	'watchlist_view_download' => 'system/modules/watchlist/templates/views',
 ));
