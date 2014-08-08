@@ -28,8 +28,13 @@ class WatchlistItemView
 	}
 
 
-	public function generateActions(WatchlistItem $item, $strHash)
+	public function generateEditActions(WatchlistItem $item, $strHash)
 	{
-		return $this->_strategy->generateActions($item, $strHash);
+		return $this->_strategy->generateEditActions($item, $strHash);
+	}
+
+	public function generateAddActions(WatchlistItem $item, $strHash)
+	{
+		return $this->_strategy->generateAddActions($item, $strHash);
 	}
 }

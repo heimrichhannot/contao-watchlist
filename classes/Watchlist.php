@@ -75,6 +75,23 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		return (empty($this->items));
 	}
 
+	public function generateActions($arrData)
+	{
+		global $objPage;
+
+		$strClass = $GLOBALS['WLV'][$arrData['type']];
+
+		if (!class_exists($strClass)) return;
+
+		$strategy = new $strClass();
+
+		$view = new WatchlistItemView($strategy);
+
+		$objItem = new WatchlistItem($arrData['id'], $objPage->id, $arrData['type']);
+
+		return $view->generateAddActions($objItem, $this->strHash);
+	}
+
 	public function generate($grouped = true)
 	{
 		$objT = new \FrontendTemplate($grouped ? 'watchlist_grouped' : 'watchlist');

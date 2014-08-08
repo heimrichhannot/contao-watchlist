@@ -15,5 +15,7 @@ interface WatchlistItemViewInterface
 {
 	public function generate(WatchlistItem $item, $strHash);
 
-	public function generateActions(WatchlistItem $item, $strHash);
+	public function generateEditActions(WatchlistItem $item, $strHash);
+
+	public function generateAddActions(WatchlistItem $item, $strHash);
 }

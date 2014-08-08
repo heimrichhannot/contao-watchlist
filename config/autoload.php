@@ -36,7 +36,6 @@ ClassLoader::addClasses(array
 	'HeimrichHannot\Watchlist\Watchlist'                  => 'system/modules/watchlist/classes/Watchlist.php',
 	'HeimrichHannot\Watchlist\WatchlistItemView'          => 'system/modules/watchlist/classes/WatchlistItemView.php',
 	'HeimrichHannot\Watchlist\WatchlistItemViewInterface' => 'system/modules/watchlist/classes/WatchlistItemViewInterface.php',
-	'HeimrichHannot\Watchlist\WatchlistController'        => 'system/modules/watchlist/classes/WatchlistController.php',
 	'HeimrichHannot\Watchlist\WatchlistItem'              => 'system/modules/watchlist/classes/WatchlistItem.php',
 	'HeimrichHannot\Watchlist\WatchlistItemDownload'      => 'system/modules/watchlist/classes/views/WatchlistItemDownload.php',
 ));
@@ -47,11 +46,16 @@ ClassLoader::addClasses(array
  */
 TemplateLoader::addFiles(array
 (
-	'mod_watchlist'           => 'system/modules/watchlist/templates/modules',
-	'watchlist_parents'       => 'system/modules/watchlist/templates/watchlist',
-	'watchlist_view_actions'  => 'system/modules/watchlist/templates/watchlist',
-	'watchlist_grouped'       => 'system/modules/watchlist/templates/watchlist',
-	'watchlist_item'          => 'system/modules/watchlist/templates/watchlist',
-	'watchlist'               => 'system/modules/watchlist/templates/watchlist',
-	'watchlist_view_download' => 'system/modules/watchlist/templates/views',
+	'mod_watchlist'             => 'system/modules/watchlist/templates/modules',
+	'watchlist_parents'         => 'system/modules/watchlist/templates/watchlist',
+	'watchlist_grouped'         => 'system/modules/watchlist/templates/watchlist',
+	'watchlist_edit_actions'    => 'system/modules/watchlist/templates/watchlist',
+	'watchlist_content_actions' => 'system/modules/watchlist/templates/watchlist',
+	'watchlist_item'            => 'system/modules/watchlist/templates/watchlist',
+	'watchlist'                 => 'system/modules/watchlist/templates/watchlist',
+	'watchlist_add_actions'     => 'system/modules/watchlist/templates/watchlist',
+	'ce_download'               => 'system/modules/watchlist/templates/elements',
+	'ce_downloads'              => 'system/modules/watchlist/templates/elements',
+	'watchlist_view_download'   => 'system/modules/watchlist/templates/views',
+	'block_searchable'          => 'system/modules/watchlist/templates/block',
 ));

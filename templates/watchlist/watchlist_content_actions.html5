@@ -1,0 +1,1 @@
+<?php echo \HeimrichHannot\Watchlist\Watchlist::getInstance()->generateActions($this->getData()); ?>
