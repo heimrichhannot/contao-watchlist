@@ -1,0 +1,1 @@
+<a class="watchlist-add" data-update="#watchlist" data-action="watchlist-update" href="<?php echo $this->addHref; ?>" title="<?php echo $this->addTitle; ?>"><?php echo $this->addLink; ?></a>

@@ -15,14 +15,21 @@ class WatchlistItem
 {
 
 	protected $id;
+	protected $cid;
 	protected $pid;
 	protected $type;
 
-	public function __construct($id, $pid, $type)
+	public function __construct($id, $pid, $cid, $type)
 	{
 		$this->id   = $id;
 		$this->pid  = $pid;
+		$this->cid = $cid;
 		$this->type = $type;
+	}
+
+	public function getUid()
+	{
+		return $this->type . '_' . $this->id ;
 	}
 
 	public function getId()
@@ -30,12 +37,12 @@ class WatchlistItem
 		return $this->id;
 	}
 
-	public function getPid()
+	public function getCid()
 	{
-		return $this->pid;
+		return $this->cid;
 	}
 
-	public function generate()
+	public function getPid()
 	{
 		return $this->pid;
 	}

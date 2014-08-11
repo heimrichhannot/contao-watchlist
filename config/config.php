@@ -6,6 +6,8 @@ define('WATCHLIST_FE_COOKIE_LIFETIME', 7776000);
 
 
 define('WATCHLIST_ACT_DELETE', 'delete');
+define('WATCHLIST_ACT_DELETE_ALL', 'deleteAll');
+define('WATCHLIST_ACT_DOWNLOAD_ALL', 'downloadAll');
 define('WATCHLIST_ACT_ADD', 'add');
 define('WATCHLIST_MOD', 'watchlist');
 
@@ -17,7 +19,7 @@ array_insert($GLOBALS['FE_MOD'], 2, array
 (
 	'miscellaneous' => array
 	(
-		'watchlist'    => 'HeimrichHannot\Watchlist\ModuleWatchlist',
+		'watchlist' => 'HeimrichHannot\Watchlist\ModuleWatchlist',
 	)
 ));
 
@@ -27,5 +29,6 @@ array_insert($GLOBALS['FE_MOD'], 2, array
  */
 $GLOBALS['WLV'] = array
 (
-	'download'	=> 'HeimrichHannot\Watchlist\WatchlistItemDownload'
+	'download'  => 'HeimrichHannot\Watchlist\WatchlistItemDownload',
+	'downloads' => 'HeimrichHannot\Watchlist\WatchlistItemDownloads'
 );

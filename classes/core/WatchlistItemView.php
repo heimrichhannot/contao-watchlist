@@ -27,14 +27,18 @@ class WatchlistItemView
 		return $this->_strategy->generate($item, $strHash);
 	}
 
-
 	public function generateEditActions(WatchlistItem $item, $strHash)
 	{
 		return $this->_strategy->generateEditActions($item, $strHash);
 	}
 
-	public function generateAddActions(WatchlistItem $item, $strHash)
+	public function generateAddActions($arrData, $id, $strHash)
 	{
-		return $this->_strategy->generateAddActions($item, $strHash);
+		return $this->_strategy->generateAddActions($arrData, $id, $strHash);
+	}
+
+	public function generateArchiveOutput(WatchlistItem $item, \ZipWriter $objZip)
+	{
+		return $this->_strategy->generateArchiveOutput($item, $objZip);
 	}
 }

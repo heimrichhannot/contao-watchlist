@@ -1,0 +1,1 @@
+<a class="watchlist-delete" data-update="#watchlist" data-action="watchlist-update" href="<?php echo $this->delHref; ?>" title="<?php echo $this->delTitle; ?>"><?php echo $this->delLink; ?></a>

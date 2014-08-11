@@ -10,4 +10,6 @@
 
 </div>
 
-<?php $this->insert('watchlist_content_actions', $this->getData()); ?>
+<?php if(!$this->watchlist): ?>
+	<?php $this->insert('watchlist_content_actions', $this->getData()); ?>
+<?php endif; ?>

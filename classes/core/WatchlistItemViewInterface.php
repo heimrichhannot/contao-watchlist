@@ -17,5 +17,7 @@ interface WatchlistItemViewInterface
 
 	public function generateEditActions(WatchlistItem $item, $strHash);
 
-	public function generateAddActions(WatchlistItem $item, $strHash);
+	public function generateAddActions($arrData, $id, $strHash);
+
+	public function generateArchiveOutput(WatchlistItem $item, \ZipWriter $objZip);
 }

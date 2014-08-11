@@ -28,7 +28,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	/**
 	 * @var int for storing the IDs, as a convenience
 	 */
-	protected $ids;
+	protected $arrIds;
 
 	protected $strHash;
 
@@ -46,7 +46,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	{
 		$objInstance = new static();
 
-		if (\Session::getInstance()->get(WATCHLIST_SESSION)){
+		if (\Session::getInstance()->get(WATCHLIST_SESSION)) {
 			$objInstance = unserialize(\Session::getInstance()->get(WATCHLIST_SESSION));
 		}
 
@@ -58,6 +58,8 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	 */
 	public function __destruct()
 	{
+		if (TL_MODE == 'BE') return null; // BackendUser::setUserFromDb uses deserialize that does not allow objects
+
 		$this->position = 0;
 		\Session::getInstance()->set(WATCHLIST_SESSION, serialize($this));
 	}
@@ -65,7 +67,9 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	/**
 	 * Prevent cloning of the object (Singleton)
 	 */
-	final public function __clone(){}
+	final public function __clone()
+	{
+	}
 
 	/**
 	 * @return bool indicating if the watchlist is empty
@@ -75,7 +79,26 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		return (empty($this->items));
 	}
 
-	public function generateActions($arrData)
+	public function generateGlobalActions()
+	{
+		if ($this->isEmpty()) return;
+
+		global $objPage;
+
+		$objT = new \FrontendTemplate('watchlist_global_actions');
+
+		$objT->delAllHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE_ALL . '&hash=' . $this->strHash);
+		$objT->delAllLink = $GLOBALS['TL_LANG']['WATCHLIST']['delAllLink'];
+		$objT->delAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delAllTitle'];
+
+		$objT->downloadAllHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DOWNLOAD_ALL . '&hash=' . $this->strHash);
+		$objT->downloadAllLink = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllLink'];
+		$objT->downloadAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllTitle'];
+
+		return $objT->parse();
+	}
+
+	public function generateEditActions($arrData, $id)
 	{
 		global $objPage;
 
@@ -87,9 +110,22 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 		$view = new WatchlistItemView($strategy);
 
-		$objItem = new WatchlistItem($arrData['id'], $objPage->id, $arrData['type']);
+		$objItem = new WatchlistItem($id, $objPage->id, $arrData['id'], $arrData['type']);
 
-		return $view->generateAddActions($objItem, $this->strHash);
+		return $view->generateEditActions($objItem, $arrData, $this->strHash);
+	}
+
+	public function generateAddActions($arrData, $id)
+	{
+		$strClass = $GLOBALS['WLV'][$arrData['type']];
+
+		if (!class_exists($strClass)) return;
+
+		$strategy = new $strClass();
+
+		$view = new WatchlistItemView($strategy);
+
+		return $view->generateAddActions($arrData, $id, $this->strHash);
 	}
 
 	public function generate($grouped = true)
@@ -97,7 +133,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		$objT = new \FrontendTemplate($grouped ? 'watchlist_grouped' : 'watchlist');
 
 		if ($this->isEmpty()) {
-			$objT->empty = 'No items';
+			$objT->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
 
 			return $objT->parse();
 		}
@@ -114,6 +150,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 			if (!class_exists($strClass)) continue;
 
 			++$i;
+
 
 			$strategy = new $strClass();
 
@@ -144,8 +181,9 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 			}
 		}
 
-		$objT->pids  = array_keys($arrParents);
-		$objT->items = $arrItems;
+		$objT->pids    = array_keys($arrParents);
+		$objT->items   = $arrItems;
+		$objT->actions = $this->generateGlobalActions();
 
 		return $objT->parse();
 	}
@@ -252,9 +290,8 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	 */
 	public function addItem(WatchlistItem $item)
 	{
-
 		// Need the item id:
-		$id = $item->getId();
+		$id = $item->getUid();
 
 		// Throw an exception if there's no id:
 		if (!$id) throw new \Exception('The watchlist requires items with unique ID values.');
@@ -264,7 +301,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 			$this->updateItem($item);
 		} else {
 			$this->items[$id] = $item;
-			$this->ids[]      = $id; // Store the id, too!
+			$this->arrIds[]   = $id; // Store the id, too!
 		}
 	}
 
@@ -275,7 +312,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	public function updateItem(WatchlistItem $item)
 	{
 		// Need the unique item id:
-		$id = $item->getId();
+		$id = $item->getUid();
 
 		$this->items[$id] = $item;
 	}
@@ -292,12 +329,44 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 			unset($this->items[$id]);
 
 			// Remove the stored id, too:
-			$index = array_search($id, $this->ids);
-			unset($this->ids[$index]);
+			$index = array_search($id, $this->arrIds);
+			unset($this->arrIds[$index]);
 
 			// Recreate that array to prevent holes:
-			$this->ids = array_values($this->ids);
+			$this->arrIds = array_values($this->arrIds);
 		}
+	}
+
+	public function deleteAll()
+	{
+		$this->items  = array();
+		$this->arrIds = array();
+	}
+
+	public function downloadAll()
+	{
+		$strFile = 'download_' . $this->strHash;
+
+		$objZip = new \ZipWriter('system/tmp/' . $strFile);
+
+		while (list($id, $item) = each($this->items)) {
+			// get view class by type
+			$strClass = $GLOBALS['WLV'][$item->getType()];
+
+			if (!class_exists($strClass)) continue;
+
+			$strategy = new $strClass();
+
+			$view = new WatchlistItemView($strategy);
+
+			$objZip = $view->generateArchiveOutput($item, $objZip);
+		}
+
+		$objZip->close();
+
+		// Open the "save as …" dialogue
+		$objFile = new \File('system/tmp/' . $strFile, true);
+		$objFile->sendToBrowser($strFile . '.zip');
 	}
 
 	public function getHash()
@@ -312,7 +381,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	public function current()
 	{
 		// Get the index for the current position:
-		$index = $this->ids[$this->position];
+		$index = $this->arrIds[$this->position];
 
 		// Return the item:
 		return $this->items[$index];
@@ -349,7 +418,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	 */
 	public function valid()
 	{
-		return (isset($this->ids[$this->position]));
+		return (isset($this->arrIds[$this->position]));
 	}
 
 	/**

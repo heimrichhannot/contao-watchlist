@@ -33,11 +33,12 @@ ClassLoader::addClasses(array
 	'Item'                                                => 'system/modules/watchlist/code/Item.php',
 
 	// Classes
-	'HeimrichHannot\Watchlist\Watchlist'                  => 'system/modules/watchlist/classes/Watchlist.php',
-	'HeimrichHannot\Watchlist\WatchlistItemView'          => 'system/modules/watchlist/classes/WatchlistItemView.php',
-	'HeimrichHannot\Watchlist\WatchlistItemViewInterface' => 'system/modules/watchlist/classes/WatchlistItemViewInterface.php',
-	'HeimrichHannot\Watchlist\WatchlistItem'              => 'system/modules/watchlist/classes/WatchlistItem.php',
+	'HeimrichHannot\Watchlist\WatchlistItemDownloads'     => 'system/modules/watchlist/classes/views/WatchlistItemDownloads.php',
 	'HeimrichHannot\Watchlist\WatchlistItemDownload'      => 'system/modules/watchlist/classes/views/WatchlistItemDownload.php',
+	'HeimrichHannot\Watchlist\Watchlist'                  => 'system/modules/watchlist/classes/core/Watchlist.php',
+	'HeimrichHannot\Watchlist\WatchlistItemView'          => 'system/modules/watchlist/classes/core/WatchlistItemView.php',
+	'HeimrichHannot\Watchlist\WatchlistItemViewInterface' => 'system/modules/watchlist/classes/core/WatchlistItemViewInterface.php',
+	'HeimrichHannot\Watchlist\WatchlistItem'              => 'system/modules/watchlist/classes/core/WatchlistItem.php',
 ));
 
 
@@ -46,16 +47,16 @@ ClassLoader::addClasses(array
  */
 TemplateLoader::addFiles(array
 (
+	'watchlist_edit_actions'    => 'system/modules/watchlist/templates/actions',
+	'watchlist_content_actions' => 'system/modules/watchlist/templates/actions',
+	'watchlist_add_actions'     => 'system/modules/watchlist/templates/actions',
+	'watchlist_global_actions'  => 'system/modules/watchlist/templates/actions',
 	'mod_watchlist'             => 'system/modules/watchlist/templates/modules',
-	'watchlist_parents'         => 'system/modules/watchlist/templates/watchlist',
+	'watchlist_item'            => 'system/modules/watchlist/templates/items',
 	'watchlist_grouped'         => 'system/modules/watchlist/templates/watchlist',
-	'watchlist_edit_actions'    => 'system/modules/watchlist/templates/watchlist',
-	'watchlist_content_actions' => 'system/modules/watchlist/templates/watchlist',
-	'watchlist_item'            => 'system/modules/watchlist/templates/watchlist',
 	'watchlist'                 => 'system/modules/watchlist/templates/watchlist',
-	'watchlist_add_actions'     => 'system/modules/watchlist/templates/watchlist',
-	'ce_download'               => 'system/modules/watchlist/templates/elements',
 	'ce_downloads'              => 'system/modules/watchlist/templates/elements',
+	'watchlist_parents'         => 'system/modules/watchlist/templates/nav',
 	'watchlist_view_download'   => 'system/modules/watchlist/templates/views',
 	'block_searchable'          => 'system/modules/watchlist/templates/block',
 ));
