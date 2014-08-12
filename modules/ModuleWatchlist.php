@@ -29,8 +29,6 @@ class ModuleWatchlist extends \Module
 			return $objTemplate->parse();
 		}
 
-		$GLOBALS['TL_JAVASCRIPT']['classie']        = 'system/modules/watchlist/assets/vendor/NotificationStyles/js/classie.js';
-		$GLOBALS['TL_JAVASCRIPT']['notificationFx'] = 'system/modules/watchlist/assets/vendor/NotificationStyles/js/notificationFx.js';
 		$GLOBALS['TL_JAVASCRIPT']['watchlist']      = 'system/modules/watchlist/assets/js/jquery.watchlist.js';
 
 		if (\Input::get('act') && \Input::get('hash') == Watchlist::getInstance()->getHash()) {
