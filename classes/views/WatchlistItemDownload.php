@@ -16,7 +16,7 @@ use Contao\ZipWriter;
 class WatchlistItemDownload implements WatchlistItemViewInterface
 {
 
-	public function generate(WatchlistItem $item, $strHash)
+	public function generate(WatchlistItem $item, Watchlist $objWatchlist)
 	{
 		$objFileModel = \FilesModel::findByPk($item->getId());
 
@@ -61,12 +61,12 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 		$objT->extension = $objFile->extension;
 		$objT->path      = $objFile->dirname;
 
-		$objT->actions = $this->generateEditActions($item, $strHash);
+		$objT->actions = $this->generateEditActions($item, $objWatchlist);
 
 		return $objT->parse();
 	}
 
-	public function generateEditActions(WatchlistItem $item, $strHash)
+	public function generateEditActions(WatchlistItem $item, Watchlist $objWatchlist)
 	{
 		$objPage = \PageModel::findByPk($item->getPid());
 
@@ -74,7 +74,7 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 
 		$objT = new \FrontendTemplate('watchlist_edit_actions');
 
-		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&hash=' . $strHash . '&id=' . $item->getUid());
+		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&hash=' . $objWatchlist->getHash() . '&id=' . $item->getUid());
 		$objT->delTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delTitle'];
 		$objT->delLink = $GLOBALS['TL_LANG']['WATCHLIST']['delLink'];
 
@@ -82,7 +82,7 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 	}
 
 
-	public function generateAddActions($arrData, $id, $strHash)
+	public function generateAddActions($arrData, $id, Watchlist $objWatchlist)
 	{
 		global $objPage;
 
@@ -100,9 +100,10 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 
 		$objT = new \FrontendTemplate('watchlist_add_actions');
 
-		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $strHash . '&cid=' . $item->getCid() . '&id=' . $item->getId());
+		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $item->getCid() . '&id=' . $item->getId());
 		$objT->addTitle = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
 		$objT->addLink = $GLOBALS['TL_LANG']['WATCHLIST']['addLink'];
+		$objT->active = $objWatchlist->isInList($item->getUid());
 
 		return $objT->parse();
 	}
@@ -116,5 +117,32 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 		$objZip->addFile($objFile->path, $objFile->name);
 
 		return $objZip;
+	}
+
+	public function getTitle(WatchlistItem $item)
+	{
+		$objFileModel = \FilesModel::findByPk($item->getId());
+
+		if ($objFileModel === null) return;
+
+		$objFile = new \File($objFileModel->path, true);
+
+		$objContent = \ContentModel::findByPk($item->getCid());
+
+		$linkTitle = specialchars($objFile->name);
+
+		// use generate for download & downloads as well
+		if ($objContent->type == 'download' && $objContent->linkTitle != '') {
+			$linkTitle = $objContent->linkTitle;
+		}
+
+		$arrMeta = deserialize($objFileModel->meta);
+
+		// Language support
+		if (($arrLang = $arrMeta[$GLOBALS['TL_LANGUAGE']]) != '') {
+			$linkTitle = $arrLang['title'] ? $arrLang['title'] : $linkTitle;
+		}
+
+		return $linkTitle;
 	}
 }

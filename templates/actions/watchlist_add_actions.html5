@@ -1,1 +1,1 @@
-<a class="watchlist-add" data-update="#watchlist" data-action="watchlist-update" href="<?php echo $this->addHref; ?>" title="<?php echo $this->addTitle; ?>"><?php echo $this->addLink; ?></a>
+<a class="watchlist-add<?php if($this->active):?> active<?php endif; ?>" data-update="#watchlist .watchlist-body" data-notify="#watchlist-notify" data-badge="#watchlist-badge" data-action="watchlist-update" href="<?php echo $this->addHref; ?>" title="<?php echo $this->addTitle; ?>"><span><?php echo $this->addLink; ?></span></a>

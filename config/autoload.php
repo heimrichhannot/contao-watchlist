@@ -53,10 +53,11 @@ TemplateLoader::addFiles(array
 	'watchlist_global_actions'  => 'system/modules/watchlist/templates/actions',
 	'mod_watchlist'             => 'system/modules/watchlist/templates/modules',
 	'watchlist_item'            => 'system/modules/watchlist/templates/items',
+	'watchlist_notify_default'  => 'system/modules/watchlist/templates/notifications',
 	'watchlist_grouped'         => 'system/modules/watchlist/templates/watchlist',
 	'watchlist'                 => 'system/modules/watchlist/templates/watchlist',
+	'ce_download'               => 'system/modules/watchlist/templates/elements',
 	'ce_downloads'              => 'system/modules/watchlist/templates/elements',
 	'watchlist_parents'         => 'system/modules/watchlist/templates/nav',
 	'watchlist_view_download'   => 'system/modules/watchlist/templates/views',
-	'block_searchable'          => 'system/modules/watchlist/templates/block',
 ));

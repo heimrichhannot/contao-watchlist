@@ -1,0 +1,3 @@
+<?php foreach ($this->notifications as $key => $text): ?>
+<?php echo $text; ?> <br />
+<?php endforeach; ?>

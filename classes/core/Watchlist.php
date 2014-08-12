@@ -32,6 +32,8 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 	protected $strHash;
 
+	protected $arrNotifications = array();
+
 	protected function __construct()
 	{
 		$this->strHash = sha1(session_id() . (!\Config::get('disableIpCheck') ? \Environment::get('ip') : '') . WATCHLIST_SESSION);
@@ -87,12 +89,12 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 		$objT = new \FrontendTemplate('watchlist_global_actions');
 
-		$objT->delAllHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE_ALL . '&hash=' . $this->strHash);
-		$objT->delAllLink = $GLOBALS['TL_LANG']['WATCHLIST']['delAllLink'];
+		$objT->delAllHref  = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE_ALL . '&hash=' . $this->strHash);
+		$objT->delAllLink  = $GLOBALS['TL_LANG']['WATCHLIST']['delAllLink'];
 		$objT->delAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delAllTitle'];
 
-		$objT->downloadAllHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DOWNLOAD_ALL . '&hash=' . $this->strHash);
-		$objT->downloadAllLink = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllLink'];
+		$objT->downloadAllHref  = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DOWNLOAD_ALL . '&hash=' . $this->strHash);
+		$objT->downloadAllLink  = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllLink'];
 		$objT->downloadAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllTitle'];
 
 		return $objT->parse();
@@ -112,7 +114,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 		$objItem = new WatchlistItem($id, $objPage->id, $arrData['id'], $arrData['type']);
 
-		return $view->generateEditActions($objItem, $arrData, $this->strHash);
+		return $view->generateEditActions($objItem, $arrData, $this);
 	}
 
 	public function generateAddActions($arrData, $id)
@@ -125,7 +127,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 		$view = new WatchlistItemView($strategy);
 
-		return $view->generateAddActions($arrData, $id, $this->strHash);
+		return $view->generateAddActions($arrData, $id, $this);
 	}
 
 	public function generate($grouped = true)
@@ -168,7 +170,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 			$objItemT           = new \FrontendTemplate('watchlist_item');
 			$objItemT->cssClass = $cssClass;
-			$objItemT->item     = $view->generate($item, $this->strHash);
+			$objItemT->item     = $view->generate($item, $this);
 
 
 			if ($grouped) {
@@ -184,6 +186,15 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		$objT->pids    = array_keys($arrParents);
 		$objT->items   = $arrItems;
 		$objT->actions = $this->generateGlobalActions();
+
+		return $objT->parse();
+	}
+
+	public function generateNotifications()
+	{
+		$objT                = new \FrontendTemplate('watchlist_notify_default');
+		$objT->notifications = $this->getNotifications();
+		$this->clearNotifications();
 
 		return $objT->parse();
 	}
@@ -299,9 +310,11 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		// Add or update:
 		if (isset($this->items[$id])) {
 			$this->updateItem($item);
+			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_update_item'], $item->getTitle()), WATCHLIST_NOTIFICATION_UPDATE_ITEM);
 		} else {
 			$this->items[$id] = $item;
 			$this->arrIds[]   = $id; // Store the id, too!
+			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_item'], $item->getTitle()), WATCHLIST_NOTIFICATION_ADD_ITEM);
 		}
 	}
 
@@ -326,6 +339,8 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		// Need the unique item id:
 		// Remove it:
 		if (isset($this->items[$id])) {
+			$item = $this->items[$id];
+
 			unset($this->items[$id]);
 
 			// Remove the stored id, too:
@@ -334,6 +349,8 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 			// Recreate that array to prevent holes:
 			$this->arrIds = array_values($this->arrIds);
+
+			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_item'], $item->getTitle()), WATCHLIST_NOTIFICATION_DELETE_ITEM);
 		}
 	}
 
@@ -341,6 +358,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	{
 		$this->items  = array();
 		$this->arrIds = array();
+		$this->addNotification($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_all'], WATCHLIST_NOTIFICATION_DELETE_ALL);
 	}
 
 	public function downloadAll()
@@ -428,5 +446,36 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	public function count()
 	{
 		return count($this->items);
+	}
+
+	public function addNotification($strText, $key)
+	{
+		$this->arrNotifications[$key] = $strText;
+	}
+
+	public function getNotifications()
+	{
+		return $this->arrNotifications;
+	}
+
+
+	public function clearNotifications()
+	{
+		$this->arrNotifications = array();
+	}
+
+	public function getItems()
+	{
+		return $this->items;
+	}
+
+	public function getIds()
+	{
+		return $this->arrIds;
+	}
+
+	public function isInList($id)
+	{
+		return isset($this->items[$id]);
 	}
 }

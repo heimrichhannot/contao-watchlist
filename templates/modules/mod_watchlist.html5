@@ -2,6 +2,22 @@
 
 <?php $this->block('content'); ?>
 
-<?php echo $this->watchlist; ?>
+<div id="watchlist-wrapper" class="<?php echo $this->cssClass; ?>" data-count="<?php echo $this->count; ?>">
+	<button type="button" class="watchlist-toggle collapsed" data-toggle="collapse" data-target="#watchlist">
+		<span id="watchlist-badge" class="badge pull-right"><?php echo $this->count; ?></span>
+		<?php echo $this->toggleLink; ?>
+	</button>
+
+	<div id="watchlist-notify"></div>
+
+	<div id="watchlist" class="collapse">
+		<button type="button" class="watchlist-close close" data-toggle="collapse" data-target="#watchlist">
+			<span aria-hidden="true">&times;</span><span class="sr-only"><?php echo $this->closeLink; ?></span>
+		</button>
+		<div class="watchlist-body">
+			<?php echo $this->watchlist; ?>
+		</div>
+	</div>
+</div>
 
 <?php $this->endblock(); ?>

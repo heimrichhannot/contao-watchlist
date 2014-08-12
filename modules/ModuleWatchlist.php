@@ -29,7 +29,9 @@ class ModuleWatchlist extends \Module
 			return $objTemplate->parse();
 		}
 
-		$GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js';
+		$GLOBALS['TL_JAVASCRIPT']['classie']        = 'system/modules/watchlist/assets/vendor/NotificationStyles/js/classie.js';
+		$GLOBALS['TL_JAVASCRIPT']['notificationFx'] = 'system/modules/watchlist/assets/vendor/NotificationStyles/js/notificationFx.js';
+		$GLOBALS['TL_JAVASCRIPT']['watchlist']      = 'system/modules/watchlist/assets/js/jquery.watchlist.js';
 
 		if (\Input::get('act') && \Input::get('hash') == Watchlist::getInstance()->getHash()) {
 			$this->runAction();
@@ -40,7 +42,11 @@ class ModuleWatchlist extends \Module
 
 	protected function compile()
 	{
-		$this->Template->watchlist = Watchlist::getInstance()->generate();
+		$this->Template->close      = $GLOBALS['TL_LANG']['WATCHLIST']['closeLink'];
+		$this->Template->count      = Watchlist::getInstance()->count();
+		$this->Template->cssClass   = Watchlist::getInstance()->count() > 0 ? 'not-empty' : 'empty';
+		$this->Template->toggleLink = $GLOBALS['TL_LANG']['WATCHLIST']['toggleLink'];
+		$this->Template->watchlist  = Watchlist::getInstance()->generate();
 	}
 
 	protected function runAction()
@@ -67,7 +73,15 @@ class ModuleWatchlist extends \Module
 
 		// if ajax -> return the content of the watchlist
 		if (\Environment::get('isAjaxRequest')) {
-			die(json_encode(Watchlist::getInstance()->generate()));
+			die(json_encode(
+				array(
+					'action'       => \Input::get('act'),
+					'watchlist'    => Watchlist::getInstance()->generate(),
+					'notification' => Watchlist::getInstance()->generateNotifications(),
+					'count'        => Watchlist::getInstance()->count(),
+					'cssClass'     => Watchlist::getInstance()->count() > 0 ? 'not-empty' : 'empty',
+				)
+			));
 		}
 
 		// no js support -- redirect and remove GET parameters

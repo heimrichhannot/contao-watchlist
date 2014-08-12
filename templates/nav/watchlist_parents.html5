@@ -5,7 +5,7 @@
 		<?php if($item['isActive']): ?>
 			<a href="<?php echo $item['href']; ?>"><?php echo $item['link']; ?></a>
 		<?php else: ?>
-			<?php echo $item['link']; ?>
+			<?php echo $item['link']; ?> &raquo;
 		<?php endif; ?>
 	</li>
 <?php endforeach; ?>

@@ -18,6 +18,7 @@ class WatchlistItem
 	protected $cid;
 	protected $pid;
 	protected $type;
+	protected $title;
 
 	public function __construct($id, $pid, $cid, $type)
 	{
@@ -25,6 +26,20 @@ class WatchlistItem
 		$this->pid  = $pid;
 		$this->cid = $cid;
 		$this->type = $type;
+	}
+
+	public function getTitle()
+	{
+		// get view class by type
+		$strClass = $GLOBALS['WLV'][$this->type];
+
+		if (!class_exists($strClass)) return;
+
+		$strategy = new $strClass();
+
+		$view = new WatchlistItemView($strategy);
+
+		return $view->getTitle($this);
 	}
 
 	public function getUid()

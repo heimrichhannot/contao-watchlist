@@ -1,8 +1,8 @@
 <ul class="watchlist-global-actions">
-	<li class="first watchlist-download-all">
-		<a href="<?php echo $this->delAllHref; ?>" data-update="#watchlist" data-action="watchlist-update" class="watchlist-download-all" title="<?php echo $this->delAllTitle; ?>"><?php echo $this->delAllLink; ?></a>
+	<li class="first watchlist-delete-all">
+		<a href="<?php echo $this->delAllHref; ?>" data-notify="#watchlist-notify" data-badge="#watchlist-badge" data-update="#watchlist .watchlist-body" data-action="watchlist-update" class="watchlist-download-all btn btn-default" title="<?php echo $this->delAllTitle; ?>"><span><?php echo $this->delAllLink; ?></span></a>
 	</li>
-	<li class="last watchlist-delete-all">
-		<a href="<?php echo $this->downloadAllHref; ?>" class="watchlist-delete-all" title="<?php echo $this->downloadAllTitle; ?>"><?php echo $this->downloadAllLink; ?></a>
+	<li class="last watchlist-download-all">
+		<a href="<?php echo $this->downloadAllHref; ?>" class=" btn btn-default" title="<?php echo $this->downloadAllTitle; ?>"><span><?php echo $this->downloadAllLink; ?></span></a>
 	</li>
 </ul>

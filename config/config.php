@@ -1,15 +1,20 @@
 <?php
 
+// session keys
 define('WATCHLIST_SESSION', 'WATCHLIST');
-define('WATCHLIST_FE_COOKIE', 'FE_WATCHLIST');
-define('WATCHLIST_FE_COOKIE_LIFETIME', 7776000);
 
-
+// actions
 define('WATCHLIST_ACT_DELETE', 'delete');
 define('WATCHLIST_ACT_DELETE_ALL', 'deleteAll');
 define('WATCHLIST_ACT_DOWNLOAD_ALL', 'downloadAll');
 define('WATCHLIST_ACT_ADD', 'add');
-define('WATCHLIST_MOD', 'watchlist');
+
+
+// notifications
+define('WATCHLIST_NOTIFICATION_UPDATE_ITEM', 'UPDATE_ITEM');
+define('WATCHLIST_NOTIFICATION_ADD_ITEM', 'ADD_ITEM');
+define('WATCHLIST_NOTIFICATION_DELETE_ITEM', 'DELETE_ITEM');
+define('WATCHLIST_NOTIFICATION_DELETE_ALL', 'DELETE_ALL');
 
 
 /**

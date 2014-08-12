@@ -14,7 +14,7 @@ namespace HeimrichHannot\Watchlist;
 class WatchlistItemDownloads extends WatchlistItemDownload implements WatchlistItemViewInterface
 {
 
-	public function generateAddActions($arrData, $id, $strHash)
+	public function generateAddActions($arrData, $id, Watchlist $objWatchlist)
 	{
 		global $objPage;
 
@@ -28,9 +28,10 @@ class WatchlistItemDownloads extends WatchlistItemDownload implements WatchlistI
 
 		$objT = new \FrontendTemplate('watchlist_add_actions');
 
-		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $strHash . '&cid=' . $item->getCid() . '&id=' . $item->getId());
+		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $item->getCid() . '&id=' . $item->getId());
 		$objT->addTitle = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
 		$objT->addLink = $GLOBALS['TL_LANG']['WATCHLIST']['addLink'];
+		$objT->active = $objWatchlist->isInList($item->getUid());
 
 		return $objT->parse();
 	}

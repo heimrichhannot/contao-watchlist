@@ -1,12 +1,10 @@
-<div id="watchlist">
-	<?php if ($this->empty): ?>
-		<p><?php echo $this->empty; ?></p>
-	<?php else: ?>
-		<ul id="watchlist" class="watchlist">
-			<?php foreach ($this->items as $id => $item): ?>
-				<?php echo $item; ?>
-			<?php endforeach; ?>
-		</ul>
-		<?php echo $this->actions; ?>
-	<?php endif; ?>
-</div>
+<?php if ($this->empty): ?>
+	<p><?php echo $this->empty; ?></p>
+<?php else: ?>
+	<ul id="watchlist" class="watchlist">
+		<?php foreach ($this->items as $id => $item): ?>
+			<?php echo $item; ?>
+		<?php endforeach; ?>
+	</ul>
+	<?php echo $this->actions; ?>
+<?php endif; ?>
