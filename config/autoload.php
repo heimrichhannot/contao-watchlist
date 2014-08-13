@@ -34,6 +34,7 @@ ClassLoader::addClasses(array
 
 	// Classes
 	'HeimrichHannot\Watchlist\WatchlistItemDownloads'     => 'system/modules/watchlist/classes/views/WatchlistItemDownloads.php',
+	'HeimrichHannot\Watchlist\WatchlistItemDefault'       => 'system/modules/watchlist/classes/views/WatchlistItemDefault.php',
 	'HeimrichHannot\Watchlist\WatchlistItemDownload'      => 'system/modules/watchlist/classes/views/WatchlistItemDownload.php',
 	'HeimrichHannot\Watchlist\Watchlist'                  => 'system/modules/watchlist/classes/core/Watchlist.php',
 	'HeimrichHannot\Watchlist\WatchlistItemView'          => 'system/modules/watchlist/classes/core/WatchlistItemView.php',

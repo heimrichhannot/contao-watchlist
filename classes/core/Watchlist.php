@@ -153,7 +153,6 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 			++$i;
 
-
 			$strategy = new $strClass();
 
 			$view = new WatchlistItemView($strategy);

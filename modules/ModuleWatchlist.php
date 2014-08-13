@@ -29,7 +29,7 @@ class ModuleWatchlist extends \Module
 			return $objTemplate->parse();
 		}
 
-		$GLOBALS['TL_JAVASCRIPT']['watchlist']      = 'system/modules/watchlist/assets/js/jquery.watchlist.js';
+		$GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js';
 
 		if (\Input::get('act') && \Input::get('hash') == Watchlist::getInstance()->getHash()) {
 			$this->runAction();
@@ -56,9 +56,7 @@ class ModuleWatchlist extends \Module
 				Watchlist::getInstance()->deleteItem(\Input::get('id'));
 				break;
 			case WATCHLIST_ACT_ADD:
-				$objContent = \ContentModel::findByPk(\Input::get('cid'));
-				if ($objContent === null) break;
-				$item = new WatchlistItem(\Input::get('id'), $objPage->id, $objContent->id, $objContent->type);
+				$item = new WatchlistItem(\Input::get('id'), $objPage->id, \Input::get('cid'), \Input::get('type'));
 				Watchlist::getInstance()->addItem($item);
 				break;
 			case WATCHLIST_ACT_DELETE_ALL:

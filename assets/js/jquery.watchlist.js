@@ -21,11 +21,7 @@
                 }).done(function(data){
                     clearTimeout(notifyTimout);
 
-                    $($this.data('notify')).html(data.notification).addClass('in' +
-                        '' +
-                        '' +
-                        '' +
-                        '');
+                    $($this.data('notify')).html(data.notification).addClass('in');
 
                     notifyTimout = window.setTimeout(function(){
                         $($this.data('notify')).removeClass('in');
@@ -38,11 +34,17 @@
                     // update parent css class & count
                     $parent.find('#watchlist-wrapper').data('count', data.count).attr('class', data.cssClass);
 
-                    // some manupalations based on the action
+                    // add active class to trigger (add) element
                     if(data.action == 'add'){
                         $this.addClass('active');
                     }
 
+                    // remove active class from trigger (add) elements
+                    if(data.action == 'delete'){
+                        $('[data-id=' + $this.data('id') + ']').removeClass('active');
+                    }
+
+                    // remove active class from all trigger (add) elements
                     if(data.action == 'deleteAll'){
                         $('.watchlist-add').removeClass('active');
                     }

@@ -32,8 +32,8 @@ array_insert($GLOBALS['FE_MOD'], 2, array
 /**
  * Watchlist Views
  */
-$GLOBALS['WLV'] = array
+array_insert($GLOBALS['WLV'], 2, array
 (
 	'download'  => 'HeimrichHannot\Watchlist\WatchlistItemDownload',
 	'downloads' => 'HeimrichHannot\Watchlist\WatchlistItemDownloads'
-);
+));

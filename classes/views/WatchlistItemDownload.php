@@ -10,17 +10,24 @@
 
 namespace HeimrichHannot\Watchlist;
 
-
-use Contao\ZipWriter;
-
-class WatchlistItemDownload implements WatchlistItemViewInterface
+class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistItemViewInterface
 {
 
 	public function generate(WatchlistItem $item, Watchlist $objWatchlist)
 	{
+		global $objPage;
+
 		$objFileModel = \FilesModel::findByPk($item->getId());
 
 		if ($objFileModel === null) return;
+
+		$file = \Input::get('file', true);
+
+		// Send the file to the browser and do not send a 404 header (see #4632)
+		if ($file != '' && $file == $objFileModel->path)
+		{
+			\Controller::sendFileToBrowser($file);
+		}
 
 		$objFile = new \File($objFileModel->path, true);
 
@@ -43,7 +50,7 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 			$linkTitle = $arrLang['title'] ? $arrLang['title'] : $linkTitle;
 		}
 
-		$strHref = \Environment::get('request');
+		$strHref = \Controller::generateFrontendUrl($objPage->row());
 
 		// Remove an existing file parameter (see #5683)
 		if (preg_match('/(&(amp;)?|\?)file=/', $strHref)) {
@@ -66,27 +73,12 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 		return $objT->parse();
 	}
 
-	public function generateEditActions(WatchlistItem $item, Watchlist $objWatchlist)
-	{
-		$objPage = \PageModel::findByPk($item->getPid());
-
-		if ($objPage === null) return;
-
-		$objT = new \FrontendTemplate('watchlist_edit_actions');
-
-		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&hash=' . $objWatchlist->getHash() . '&id=' . $item->getUid());
-		$objT->delTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delTitle'];
-		$objT->delLink = $GLOBALS['TL_LANG']['WATCHLIST']['delLink'];
-
-		return $objT->parse();
-	}
-
-
 	public function generateAddActions($arrData, $id, Watchlist $objWatchlist)
 	{
 		global $objPage;
 
 		if ($objPage === null) return;
+
 
 		$objContent = \ContentModel::findByPk($arrData['id']);
 
@@ -100,10 +92,11 @@ class WatchlistItemDownload implements WatchlistItemViewInterface
 
 		$objT = new \FrontendTemplate('watchlist_add_actions');
 
-		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $item->getCid() . '&id=' . $item->getId());
+		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $item->getCid() . '&type=' . $item->getType() . '&id=' . $item->getId());
 		$objT->addTitle = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
 		$objT->addLink = $GLOBALS['TL_LANG']['WATCHLIST']['addLink'];
 		$objT->active = $objWatchlist->isInList($item->getUid());
+		$objT->id = $item->getUid();
 
 		return $objT->parse();
 	}
