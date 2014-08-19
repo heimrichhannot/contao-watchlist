@@ -57,6 +57,7 @@ TemplateLoader::addFiles(array
 	'watchlist_notify_default'  => 'system/modules/watchlist/templates/notifications',
 	'watchlist_grouped'         => 'system/modules/watchlist/templates/watchlist',
 	'watchlist'                 => 'system/modules/watchlist/templates/watchlist',
+	'ce_download_inserttag'     => 'system/modules/watchlist/templates/elements',
 	'ce_download'               => 'system/modules/watchlist/templates/elements',
 	'ce_downloads'              => 'system/modules/watchlist/templates/elements',
 	'watchlist_parents'         => 'system/modules/watchlist/templates/nav',

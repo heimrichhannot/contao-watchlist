@@ -27,7 +27,7 @@ class WatchlistItemDefault implements WatchlistItemViewInterface
 
 		$objT = new \FrontendTemplate('watchlist_edit_actions');
 
-		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&hash=' . $objWatchlist->getHash() . '&id=' . $item->getUid());
+		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&hash=' . $objWatchlist->getHash() . '&id=' . $item->getUid() . '&title=' . urlencode($item->getTitle()));
 		$objT->delTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delTitle'];
 		$objT->delLink = $GLOBALS['TL_LANG']['WATCHLIST']['delLink'];
 		$objT->id = $item->getUid();
