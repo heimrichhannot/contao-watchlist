@@ -56,7 +56,7 @@ class ModuleWatchlist extends \Module
 				Watchlist::getInstance()->deleteItem(\Input::get('id'));
 				break;
 			case WATCHLIST_ACT_ADD:
-				$item = new WatchlistItem(\Input::get('id'), $objPage->id, \Input::get('cid'), \Input::get('type'));
+				$item = new WatchlistItem(\Input::get('id'), $objPage->id, \Input::get('cid'), \Input::get('type'), \Input::get('title'));
 				Watchlist::getInstance()->addItem($item);
 				break;
 			case WATCHLIST_ACT_DELETE_ALL:

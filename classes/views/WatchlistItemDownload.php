@@ -59,7 +59,7 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 
 		$strHref .= ((\Config::get('disableAlias') || strpos($strHref, '?') !== false) ? '&amp;' : '?') . 'file=' . \System::urlEncode($objFile->path);
 
-		$objT->link      = $linkTitle;
+		$objT->link      = ($itemTitle = $item->getTitle()) ? $itemTitle : $linkTitle;
 		$objT->title     = specialchars($objContent->titleText ? : $linkTitle);
 		$objT->href      = $strHref;
 		$objT->filesize  = \System::getReadableSize($objFile->filesize, 1);
@@ -79,20 +79,23 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 
 		if ($objPage === null) return;
 
-
 		$objContent = \ContentModel::findByPk($arrData['id']);
 
-		if ($objContent === null) return;
+		// inserttag download support
+		$blnInsertTag = \Validator::isUuid($id);
 
-		$objFile = \FilesModel::findByUuid($objContent->singleSRC);
+		if ($objContent === null && !$blnInsertTag) return;
+
+		$objFile = \FilesModel::findByUuid($blnInsertTag ? $id : $objContent->singleSRC);
 
 		if ($objFile === null) return;
 
-		$item = new WatchlistItem($objFile->id, $objPage->id, $arrData['id'], $arrData['type']);
+
+		$item = new WatchlistItem($objFile->id, $objPage->id, $arrData['id'], $arrData['type'] , ($blnInsertTag && $arrData['linkTitle']) ? $arrData['linkTitle'] :  '');
 
 		$objT = new \FrontendTemplate('watchlist_add_actions');
 
-		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $item->getCid() . '&type=' . $item->getType() . '&id=' . $item->getId());
+		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $item->getCid() . '&type=' . $item->getType() . '&id=' . $item->getId() . '&title=' . $item->getTitle());
 		$objT->addTitle = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
 		$objT->addLink = $GLOBALS['TL_LANG']['WATCHLIST']['addLink'];
 		$objT->active = $objWatchlist->isInList($item->getUid());

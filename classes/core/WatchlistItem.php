@@ -20,16 +20,19 @@ class WatchlistItem
 	protected $type;
 	protected $title;
 
-	public function __construct($id, $pid, $cid, $type)
+	public function __construct($id, $pid, $cid, $type, $title = '')
 	{
 		$this->id   = $id;
 		$this->pid  = $pid;
 		$this->cid = $cid;
 		$this->type = $type;
+		$this->title = $title;
 	}
 
 	public function getTitle()
 	{
+		if($this->title) return $this->title;
+
 		// get view class by type
 		$strClass = $GLOBALS['WLV'][$this->type];
 
