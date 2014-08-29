@@ -29,7 +29,7 @@
 						href="<?php echo $enclosure['href']; ?>"
 						title="<?php echo $enclosure['title']; ?>"><?php echo $enclosure['link']; ?> <span class="size">(<?php echo $enclosure['filesize']; ?>
 							)</span></a>
-					<?php echo \HeimrichHannot\Watchlist\Watchlist::getInstance()->generateAddActions($this->getData(), $enclosure['id']); ?>
+					<?php echo \HeimrichHannot\Watchlist\Watchlist::getInstance()->generateAddActions(array('type' => 'enclosure'), $enclosure['enclosure']); ?>
 				</p>
 			<?php endforeach; ?>
 		</div>
