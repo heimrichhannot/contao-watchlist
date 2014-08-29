@@ -48,6 +48,6 @@ class WatchlistItemDefault implements WatchlistItemViewInterface
 
 	public function getTitle(WatchlistItem $item)
 	{
-		return $item->getId();
+		return $item->getTitle();
 	}
 }
