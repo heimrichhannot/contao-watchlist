@@ -29,7 +29,7 @@ class ModuleWatchlist extends \Module
 			return $objTemplate->parse();
 		}
 
-		$GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js';
+		$GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js|static';
 
 		if (\Input::get('act') && \Input::get('hash') == Watchlist::getInstance()->getHash()) {
 			$this->runAction();
