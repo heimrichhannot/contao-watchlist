@@ -13,13 +13,13 @@ namespace HeimrichHannot\Watchlist;
 
 interface WatchlistItemViewInterface
 {
-	public function generate(WatchlistItem $item, Watchlist $objWatchlist);
+	public function generate(WatchlistItemModel $objItem, Watchlist $objWatchlist);
 
-	public function generateEditActions(WatchlistItem $item, Watchlist $objWatchlist);
+	public function generateEditActions(WatchlistItemModel $objItem, Watchlist $objWatchlist);
 
 	public function generateAddActions($arrData, $id, Watchlist $objWatchlist);
 
-	public function generateArchiveOutput(WatchlistItem $item, \ZipWriter $objZip);
+	public function generateArchiveOutput(WatchlistItemModel $objItem, \ZipWriter $objZip);
 
-	public function getTitle(WatchlistItem $item);
+	public function getTitle(WatchlistItemModel $objItem);
 }

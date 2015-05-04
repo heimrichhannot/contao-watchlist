@@ -2,6 +2,8 @@
 
 // session keys
 define('WATCHLIST_SESSION', 'WATCHLIST');
+define('WATCHLIST_SESSION_FE', 'WATCHLIST_SESSION_FE');
+define('WATCHLIST_SESSION_BE', 'WATCHLIST_SESSION_BE');
 
 // actions
 define('WATCHLIST_ACT_DELETE', 'delete');
@@ -16,6 +18,11 @@ define('WATCHLIST_NOTIFICATION_ADD_ITEM', 'ADD_ITEM');
 define('WATCHLIST_NOTIFICATION_DELETE_ITEM', 'DELETE_ITEM');
 define('WATCHLIST_NOTIFICATION_DELETE_ALL', 'DELETE_ALL');
 
+/**
+ * Models
+ */
+$GLOBALS['TL_MODELS']['tl_watchlist'] = 'HeimrichHannot\Watchlist\WatchlistModel';
+$GLOBALS['TL_MODELS']['tl_watchlist_item'] = 'HeimrichHannot\Watchlist\WatchlistItemModel';
 
 /**
  * Front end modules

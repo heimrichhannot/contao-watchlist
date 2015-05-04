@@ -11,19 +11,20 @@
 namespace HeimrichHannot\Watchlist;
 
 
-class WatchlistItem
-{
+use Contao\FilesModel;
 
+class WatchlistItem extends WatchlistItemModel
+{
 	protected $id;
 	protected $cid;
-	protected $pid;
+	protected $pageID;
 	protected $type;
 	protected $title;
 
-	public function __construct($id, $pid, $cid, $type, $title = '')
+	public function __construct($id, $pageID, $cid, $type, $title = '')
 	{
 		$this->id   = $id;
-		$this->pid  = $pid;
+		$this->pageID  = $pageID;
 		$this->cid = $cid;
 		$this->type = $type;
 		$this->title = $title;
@@ -60,13 +61,37 @@ class WatchlistItem
 		return $this->cid;
 	}
 
-	public function getPid()
+	public function getPageID()
 	{
-		return $this->pid;
+		return $this->pageID;
 	}
 
 	public function getType()
 	{
 		return $this->type;
 	}
+
+	public function getUuid()
+	{
+		$objModel = FilesModel::findById($this->id);
+
+		if($objModel !== null)
+		{
+			return \String::binToUuid($objModel->uuid);
+		}
+	}
+
+	public function save($pid)
+	{
+		$objModel = new WatchlistItemModel();
+		$objModel->uuid = \String::uuidToBin($this->id);
+		$objModel->pid = $pid;
+		$objModel->pageID = $this->pageID;
+		$objModel->cid = $this->cid;
+		$objModel->tstamp = time();
+		$objModel->title = $this->getTitle();
+		$objModel->type = $this->type;
+		return $objModel->save();
+	}
+
 }

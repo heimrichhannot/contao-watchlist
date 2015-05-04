@@ -11,14 +11,18 @@
 namespace HeimrichHannot\Watchlist;
 
 
-class Watchlist extends \Controller implements \Iterator, \Countable
+class Watchlist extends \System implements \Iterator, \Countable
 {
-	protected static $objInstance;
-
 	/**
 	 * @var array stores the list of items in the watchlist
 	 */
-	protected $items;
+	protected $arrItems;
+
+	/**
+	 * Object instance (Singleton)
+	 * @var \User
+	 */
+	protected static $objInstance;
 
 	/**
 	 * @var int for tracking iterations
@@ -32,27 +36,60 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 	protected $strHash;
 
+	protected $strName;
+
+	protected $strIp;
+
 	protected $arrNotifications = array();
+
+	protected $objModel = null;
 
 	protected function __construct()
 	{
-		$this->strHash = sha1(session_id() . (!\Config::get('disableIpCheck') ? \Environment::get('ip') : '') . WATCHLIST_SESSION);
+		$this->strIp = (!\Config::get('disableIpCheck') ? \Environment::get('ip') : '');
+		$this->strName = FE_USER_LOGGED_IN ? WATCHLIST_SESSION_FE : WATCHLIST_SESSION_BE;
+		$this->strHash = sha1(session_id() . $this->strIp . $this->strName);
+
+		if(($this->objModel = WatchlistModel::findByHashAndName($this->strHash, $this->strName)) === null)
+		{
+			$this->objModel = new WatchlistModel();
+			$this->objModel->hash = $this->strHash;
+			$this->objModel->name = $this->strName;
+			$this->objModel->tstamp = time();
+			$this->objModel->pid = \FrontendUser::getInstance()->id;
+			$this->objModel->sessionID = session_id();
+			$this->objModel->ip = $this->strIp;
+			$this->objModel->save();
+		}
+
+		$objItems = WatchlistItemModel::findBy('pid', $this->objModel->id);
+
+		if($objItems !== null)
+		{
+			while($objItems->next())
+			{
+				// set key by unique uuid
+				$strKey = \String::binToUuid($objItems->uuid);
+				$this->arrItems[$strKey] = $objItems->current();
+				$this->arrIds[] = $strKey;
+			}
+		}
+
 	}
 
 	/**
-	 * Session Singleton
-	 * Load watchlist from Session if exists
-	 * @return mixed|static
+	 * Instantiate a new user object (Factory)
+	 *
+	 * @return \User The object instance
 	 */
 	public static function getInstance()
 	{
-		$objInstance = new static();
-
-		if (\Session::getInstance()->get(WATCHLIST_SESSION)) {
-			$objInstance = unserialize(\Session::getInstance()->get(WATCHLIST_SESSION));
+		if (static::$objInstance === null)
+		{
+			static::$objInstance = new static();
 		}
 
-		return $objInstance;
+		return static::$objInstance;
 	}
 
 	/**
@@ -60,25 +97,21 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	 */
 	public function __destruct()
 	{
-		if (TL_MODE == 'BE') return null; // BackendUser::setUserFromDb uses deserialize that does not allow objects
 
 		$this->position = 0;
-		\Session::getInstance()->set(WATCHLIST_SESSION, serialize($this));
 	}
 
 	/**
 	 * Prevent cloning of the object (Singleton)
 	 */
-	final public function __clone()
-	{
-	}
+	final public function __clone(){}
 
 	/**
 	 * @return bool indicating if the watchlist is empty
 	 */
 	public function isEmpty()
 	{
-		return (empty($this->items));
+		return (empty($this->arrItems));
 	}
 
 	public function generateGlobalActions()
@@ -145,9 +178,9 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 		$i = 0;
 
-		while (list($id, $item) = each($this->items)) {
+		while (list($id, $item) = each($this->arrItems)) {
 			// get view class by type
-			$strClass = $GLOBALS['WLV'][$item->getType()];
+			$strClass = $GLOBALS['WLV'][$item->type];
 
 			if (!class_exists($strClass)) continue;
 
@@ -159,11 +192,11 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 			$cssClass = trim(($i == 1 ? 'first ' : '') . ($i == $this->count() ? 'last ' : '') . ($i % 2 == 0 ? 'odd ' : 'even '));
 
-			if (!isset($arrParents[$item->getPid()])) {
+			if (!isset($arrParents[$item->pageID])) {
 
 				$objParentT                  = new \FrontendTemplate('watchlist_parents');
-				$objParentT->items           = $this->generateParentList(\PageModel::findByPk($item->getPid()));
-				$arrParents[$item->getPid()] = $objParentT->parse();
+				$objParentT->items           = $this->generateParentList(\PageModel::findByPk($item->pageID));
+				$arrParents[$item->pageID] = $objParentT->parse();
 
 			}
 
@@ -173,11 +206,11 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 
 			if ($grouped) {
-				$arrItems[$item->getPid()]['page']       = $arrParents[$item->getPid()];
-				$arrItems[$item->getPid()]['items'][$id] = $objItemT->parse();
+				$arrItems[$item->pageID]['page']       = $arrParents[$item->pageID];
+				$arrItems[$item->pageID]['items'][$id] = $objItemT->parse();
 
 			} else {
-				$arrPids[$item->getPid()] = $arrParents[$item->getPid()];
+				$arrPids[$item->pageID] = $arrParents[$item->pageID];
 				$arrItems[$id]            = $objItemT->parse();
 			}
 		}
@@ -224,7 +257,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 			(
 				'isRoot'   => true,
 				'isActive' => false,
-				'href'     => (($objFirstPage !== null) ? $this->generateFrontendUrl($objFirstPage->row()) : \Environment::get('base')),
+				'href'     => (($objFirstPage !== null) ? \Controller::generateFrontendUrl($objFirstPage->row()) : \Environment::get('base')),
 				'title'    => specialchars($objPages->pageTitle ? : $objPages->title, true),
 				'link'     => $objPages->title,
 				'data'     => $objFirstPage->row(),
@@ -254,13 +287,13 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 					$objNext = \PageModel::findPublishedById($pages[$i]['jumpTo']);
 
 					if ($objNext !== null) {
-						$href = $this->generateFrontendUrl($objNext->row());
+						$href = \Controller::generateFrontendUrl($objNext->row());
 						break;
 					}
 				// DO NOT ADD A break; STATEMENT
 
 				default:
-					$href = $this->generateFrontendUrl($pages[$i]);
+					$href = \Controller::generateFrontendUrl($pages[$i]);
 					break;
 			}
 
@@ -281,7 +314,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		(
 			'isRoot'   => false,
 			'isActive' => true,
-			'href'     => $this->generateFrontendUrl($pages[0]),
+			'href'     => \Controller::generateFrontendUrl($pages[0]),
 			'title'    => specialchars($pages[0]['pageTitle'] ? : $pages[0]['title']),
 			'link'     => $pages[0]['title'],
 			'data'     => $pages[0],
@@ -301,17 +334,18 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	public function addItem(WatchlistItem $item)
 	{
 		// Need the item id:
-		$id = $item->getUid();
+		$id = $item->getUuid();
 
 		// Throw an exception if there's no id:
 		if (!$id) throw new \Exception('The watchlist requires items with unique ID values.');
 
 		// Add or update:
-		if (isset($this->items[$id])) {
+		if (isset($this->arrItems[$id])) {
 			$this->updateItem($item);
 			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_update_item'], $item->getTitle()), WATCHLIST_NOTIFICATION_UPDATE_ITEM);
 		} else {
-			$this->items[$id] = $item;
+			$objItem = $item->save($this->getId());
+			$this->arrItems[$id] = $objItem;
 			$this->arrIds[]   = $id; // Store the id, too!
 			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_item'], $item->getTitle()), WATCHLIST_NOTIFICATION_ADD_ITEM);
 		}
@@ -326,7 +360,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		// Need the unique item id:
 		$id = $item->getUid();
 
-		$this->items[$id] = $item;
+		$this->arrItems[$id] = $item;
 	}
 
 	/**
@@ -337,10 +371,10 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	{
 		// Need the unique item id:
 		// Remove it:
-		if (isset($this->items[$id])) {
-			$item = $this->items[$id];
+		if (isset($this->arrItems[$id])) {
+			$item = $this->arrItems[$id];
 
-			unset($this->items[$id]);
+			unset($this->arrItems[$id]);
 
 			// Remove the stored id, too:
 			$index = array_search($id, $this->arrIds);
@@ -349,15 +383,26 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 			// Recreate that array to prevent holes:
 			$this->arrIds = array_values($this->arrIds);
 
-			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_item'], $item->getTitle()), WATCHLIST_NOTIFICATION_DELETE_ITEM);
+			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_item'], $item->title), WATCHLIST_NOTIFICATION_DELETE_ITEM);
+
+			$item->delete();
 		}
 	}
 
 	public function deleteAll()
 	{
-		$this->items  = array();
+		$this->arrItems  = array();
 		$this->arrIds = array();
 		$this->addNotification($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_all'], WATCHLIST_NOTIFICATION_DELETE_ALL);
+
+		// Delete the watchlist
+		$this->objModel->delete();
+
+		// Delete all items
+		foreach($this->arrItems as $objItem)
+		{
+			$objItem->delete();
+		}
 	}
 
 	public function downloadAll()
@@ -366,9 +411,9 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 		$objZip = new \ZipWriter('system/tmp/' . $strFile);
 
-		while (list($id, $item) = each($this->items)) {
+		while (list($id, $item) = each($this->arrItems)) {
 			// get view class by type
-			$strClass = $GLOBALS['WLV'][$item->getType()];
+			$strClass = $GLOBALS['WLV'][$item->type];
 
 			if (!class_exists($strClass)) continue;
 
@@ -401,7 +446,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 		$index = $this->arrIds[$this->position];
 
 		// Return the item:
-		return $this->items[$index];
+		return $this->arrItems[$index];
 	}
 
 	/**
@@ -444,7 +489,7 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 	 */
 	public function count()
 	{
-		return count($this->items);
+		return count($this->arrItems);
 	}
 
 	public function addNotification($strText, $key)
@@ -465,7 +510,12 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 	public function getItems()
 	{
-		return $this->items;
+		return $this->arrItems;
+	}
+
+	public function getId()
+	{
+		return $this->objModel->id;
 	}
 
 	public function getIds()
@@ -475,6 +525,6 @@ class Watchlist extends \Controller implements \Iterator, \Countable
 
 	public function isInList($id)
 	{
-		return isset($this->items[$id]);
+		return isset($this->arrItems[$id]);
 	}
 }

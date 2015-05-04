@@ -22,14 +22,14 @@ class WatchlistItemView
 		$this->_strategy = $strategy;
 	}
 
-	public function generate(WatchlistItem $item, Watchlist $objWatchlist)
+	public function generate(WatchlistItemModel $objItem, Watchlist $objWatchlist)
 	{
-		return $this->_strategy->generate($item, $objWatchlist);
+		return $this->_strategy->generate($objItem, $objWatchlist);
 	}
 
-	public function generateEditActions(WatchlistItem $item, Watchlist $objWatchlist)
+	public function generateEditActions(WatchlistItemModel $objItem, Watchlist $objWatchlist)
 	{
-		return $this->_strategy->generateEditActions($item, $objWatchlist);
+		return $this->_strategy->generateEditActions($objItem, $objWatchlist);
 	}
 
 	public function generateAddActions($arrData, $id, Watchlist $objWatchlist)
@@ -37,13 +37,13 @@ class WatchlistItemView
 		return $this->_strategy->generateAddActions($arrData, $id, $objWatchlist);
 	}
 
-	public function generateArchiveOutput(WatchlistItem $item, \ZipWriter $objZip)
+	public function generateArchiveOutput(WatchlistItemModel $objItem, \ZipWriter $objZip)
 	{
-		return $this->_strategy->generateArchiveOutput($item, $objZip);
+		return $this->_strategy->generateArchiveOutput($objItem, $objZip);
 	}
 
-	public function getTitle(WatchlistItem $item)
+	public function getTitle(WatchlistItemModel $objItem)
 	{
-		return $this->_strategy->getTitle($item);
+		return $this->_strategy->getTitle($objItem);
 	}
 }

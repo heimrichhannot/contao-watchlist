@@ -13,11 +13,11 @@ namespace HeimrichHannot\Watchlist;
 class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistItemViewInterface
 {
 
-	public function generate(WatchlistItem $item, Watchlist $objWatchlist)
+	public function generate(WatchlistItemModel $objItem, Watchlist $objWatchlist)
 	{
 		global $objPage;
 
-		$objFileModel = \FilesModel::findByPk($item->getId());
+		$objFileModel = \FilesModel::findById($objItem->uuid);
 
 		if ($objFileModel === null) return;
 
@@ -31,7 +31,7 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 
 		$objFile = new \File($objFileModel->path, true);
 
-		$objContent = \ContentModel::findByPk($item->getCid());
+		$objContent = \ContentModel::findByPk($objItem->cid);
 
 		$objT = new \FrontendTemplate('watchlist_view_download');
 		$objT->setData($objFileModel->row());
@@ -59,7 +59,7 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 
 		$strHref .= ((\Config::get('disableAlias') || strpos($strHref, '?') !== false) ? '&amp;' : '?') . 'file=' . \System::urlEncode($objFile->path);
 
-		$objT->link      = ($itemTitle = $item->getTitle()) ? $itemTitle : $linkTitle;
+		$objT->link      = ($objItemTitle = $objItem->title) ? $objItemTitle : $linkTitle;
 		$objT->title     = specialchars($objContent->titleText ? : $linkTitle);
 		$objT->href      = $strHref;
 		$objT->filesize  = \System::getReadableSize($objFile->filesize, 1);
@@ -68,7 +68,7 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 		$objT->extension = $objFile->extension;
 		$objT->path      = $objFile->dirname;
 
-		$objT->actions = $this->generateEditActions($item, $objWatchlist);
+		$objT->actions = $this->generateEditActions($objItem, $objWatchlist);
 
 		return $objT->parse();
 	}
@@ -91,22 +91,22 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 		if ($objFile === null) return;
 
 
-		$item = new WatchlistItem($objFile->id, $objPage->id, $arrData['id'], $arrData['type'] , ($blnInsertTag && $arrData['linkTitle']) ? $arrData['linkTitle'] :  '');
+		$objItem = new WatchlistItem($objFile->id, $objPage->id, $arrData['id'], $arrData['type'] , ($blnInsertTag && $arrData['linkTitle']) ? $arrData['linkTitle'] :  '');
 
 		$objT = new \FrontendTemplate('watchlist_add_actions');
 
-		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $item->getCid() . '&type=' . $item->getType() . '&id=' . $item->getId() . '&title=' . urlencode($item->getTitle()));
+		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $objItem->getCid() . '&type=' . $objItem->getType() . '&id=' . $objItem->getId() . '&title=' . urlencode($objItem->getTitle()));
 		$objT->addTitle = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
 		$objT->addLink = $GLOBALS['TL_LANG']['WATCHLIST']['addLink'];
-		$objT->active = $objWatchlist->isInList($item->getUid());
-		$objT->id = $item->getUid();
+		$objT->active = $objWatchlist->isInList($objItem->getUid());
+		$objT->id = $objItem->getUid();
 
 		return $objT->parse();
 	}
 
-	public function generateArchiveOutput(WatchlistItem $item, \ZipWriter $objZip)
+	public function generateArchiveOutput(WatchlistItemModel $objItem, \ZipWriter $objZip)
 	{
-		$objFile = \FilesModel::findByPk($item->getId());
+		$objFile = \FilesModel::findById($objItem->uuid);
 
 		if ($objFile === null) return $objZip;
 
@@ -115,15 +115,15 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 		return $objZip;
 	}
 
-	public function getTitle(WatchlistItem $item)
+	public function getTitle(WatchlistItemModel $objItem)
 	{
-		$objFileModel = \FilesModel::findByPk($item->getId());
+		$objFileModel = \FilesModel::findById($objItem->uuid);
 
 		if ($objFileModel === null) return;
 
 		$objFile = new \File($objFileModel->path, true);
 
-		$objContent = \ContentModel::findByPk($item->getCid());
+		$objContent = \ContentModel::findByPk($objItem->getCid());
 
 		$linkTitle = specialchars($objFile->name);
 

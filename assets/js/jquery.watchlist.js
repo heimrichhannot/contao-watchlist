@@ -27,6 +27,8 @@
                         $($this.data('notify')).removeClass('in');
                     }, 3500);
 
+					console.log(data.watchlist);
+
                     $($this.data('notify')).html(data.notification);
                     $($this.data('update')).html(data.watchlist);
                     $($this.data('badge')).html(data.count);

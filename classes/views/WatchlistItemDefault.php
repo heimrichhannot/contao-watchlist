@@ -14,23 +14,23 @@ namespace HeimrichHannot\Watchlist;
 class WatchlistItemDefault implements WatchlistItemViewInterface
 {
 
-	public function generate(WatchlistItem $item, Watchlist $objWatchlist)
+	public function generate(WatchlistItemModel $objItem, Watchlist $objWatchlist)
 	{
 		return '';
 	}
 
-	public function generateEditActions(WatchlistItem $item, Watchlist $objWatchlist)
+	public function generateEditActions(WatchlistItemModel $objItem, Watchlist $objWatchlist)
 	{
-		$objPage = \PageModel::findByPk($item->getPid());
+		$objPage = \PageModel::findByPk($objItem->pageID);
 
 		if ($objPage === null) return;
 
 		$objT = new \FrontendTemplate('watchlist_edit_actions');
 
-		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&hash=' . $objWatchlist->getHash() . '&id=' . $item->getUid() . '&title=' . urlencode($item->getTitle()));
+		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&hash=' . $objWatchlist->getHash() . '&id=' . \String::binToUuid($objItem->uuid) . '&title=' . urlencode($objItem->title));
 		$objT->delTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delTitle'];
 		$objT->delLink = $GLOBALS['TL_LANG']['WATCHLIST']['delLink'];
-		$objT->id = $item->getUid();
+		$objT->id = \String::binToUuid($objItem->uuid);
 
 		return $objT->parse();
 	}
@@ -41,13 +41,13 @@ class WatchlistItemDefault implements WatchlistItemViewInterface
 		return '';
 	}
 
-	public function generateArchiveOutput(WatchlistItem $item, \ZipWriter $objZip)
+	public function generateArchiveOutput(WatchlistItemModel $objItem, \ZipWriter $objZip)
 	{
 		return $objZip;
 	}
 
-	public function getTitle(WatchlistItem $item)
+	public function getTitle(WatchlistItemModel $objItem)
 	{
-		return $item->getTitle();
+		return $objItem->title;
 	}
 }

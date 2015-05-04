@@ -3,11 +3,9 @@
 /**
  * Contao Open Source CMS
  *
- * Copyright (c) 2005-2014 Leo Feyer
+ * Copyright (c) 2005-2015 Leo Feyer
  *
- * @package Watchlist
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license LGPL-3.0+
  */
 
 
@@ -25,6 +23,10 @@ ClassLoader::addNamespaces(array
  */
 ClassLoader::addClasses(array
 (
+	// Models
+	'HeimrichHannot\Watchlist\WatchlistModel'             => 'system/modules/watchlist/models/WatchlistModel.php',
+	'HeimrichHannot\Watchlist\WatchlistItemModel'         => 'system/modules/watchlist/models/WatchlistItemModel.php',
+
 	// Modules
 	'HeimrichHannot\Watchlist\ModuleWatchlist'            => 'system/modules/watchlist/modules/ModuleWatchlist.php',
 
