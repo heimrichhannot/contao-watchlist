@@ -31,7 +31,8 @@ class ModuleWatchlist extends \Module
 
 		$GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js|static';
 
-		if (\Input::get('act') && \Input::get('hash') == Watchlist::getInstance()->getHash()) {
+		if (\Input::get('act'))
+		{
 			$this->runAction();
 		}
 
@@ -56,8 +57,15 @@ class ModuleWatchlist extends \Module
 				Watchlist::getInstance()->deleteItem(\Input::get('id'));
 				break;
 			case WATCHLIST_ACT_ADD:
-				$item = new WatchlistItem(\Input::get('id'), $objPage->id, \Input::get('cid'), \Input::get('type'), \Input::get('title'));
-				Watchlist::getInstance()->addItem($item);
+				$objItem = new WatchlistItemModel();
+				$objItem->pid = Watchlist::getInstance()->getId();
+				$objItem->uuid = \Input::get('id');
+				$objItem->pageID = $objPage->id;
+				$objItem->cid = \Input::get('cid');
+				$objItem->type = \Input::get('type');
+				$objItem->title = \Input::get('title');
+				$objItem->tstamp = time();
+				Watchlist::getInstance()->addItem($objItem);
 				break;
 			case WATCHLIST_ACT_DELETE_ALL:
 				Watchlist::getInstance()->deleteAll();

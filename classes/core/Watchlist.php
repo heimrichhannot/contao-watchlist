@@ -122,11 +122,11 @@ class Watchlist extends \System implements \Iterator, \Countable
 
 		$objT = new \FrontendTemplate('watchlist_global_actions');
 
-		$objT->delAllHref  = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE_ALL . '&hash=' . $this->strHash);
+		$objT->delAllHref  = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE_ALL);
 		$objT->delAllLink  = $GLOBALS['TL_LANG']['WATCHLIST']['delAllLink'];
 		$objT->delAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delAllTitle'];
 
-		$objT->downloadAllHref  = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DOWNLOAD_ALL . '&hash=' . $this->strHash);
+		$objT->downloadAllHref  = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DOWNLOAD_ALL);
 		$objT->downloadAllLink  = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllLink'];
 		$objT->downloadAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllTitle'];
 
@@ -145,7 +145,12 @@ class Watchlist extends \System implements \Iterator, \Countable
 
 		$view = new WatchlistItemView($strategy);
 
-		$objItem = new WatchlistItem($id, $objPage->id, $arrData['id'], $arrData['type']);
+		$objItem = new WatchlistItemModel();
+		$objItem->pid = $this->getId();
+		$objItem->uuid = $id;
+		$objItem->pageId = $objPage->id;
+		$objItem->cid = $arrData['id'];
+		$objItem->type = $arrData['type'];
 
 		return $view->generateEditActions($objItem, $arrData, $this);
 	}
@@ -328,39 +333,40 @@ class Watchlist extends \System implements \Iterator, \Countable
 
 	/**
 	 * Adds a new item to the watchlist
-	 * @param WatchlistItem $item
+	 * @param WatchlistItemModel $objItem
 	 * @throws \Exception
 	 */
-	public function addItem(WatchlistItem $item)
+	public function addItem(WatchlistItemModel $objItem)
 	{
-		// Need the item id:
-		$id = $item->getUuid();
-
 		// Throw an exception if there's no id:
-		if (!$id) throw new \Exception('The watchlist requires items with unique ID values.');
+		if (!\Validator::isStringUuid($objItem->uuid)) throw new \Exception('The watchlist requires items with an unique file uuid.');
 
-		// Add or update:
-		if (isset($this->arrItems[$id])) {
-			$this->updateItem($item);
-			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_update_item'], $item->getTitle()), WATCHLIST_NOTIFICATION_UPDATE_ITEM);
-		} else {
-			$objItem = $item->save($this->getId());
-			$this->arrItems[$id] = $objItem;
-			$this->arrIds[]   = $id; // Store the id, too!
-			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_item'], $item->getTitle()), WATCHLIST_NOTIFICATION_ADD_ITEM);
+		$strUuid = $objItem->uuid;
+
+		$objItem->uuid = \String::uuidToBin($objItem->uuid); // transform string to bin
+
+		// Add or delete:
+		if (isset($this->arrItems[$strUuid]))
+		{
+			\Input::setGet('act', WATCHLIST_ACT_DELETE);
+			$this->deleteItem($strUuid);
+		}
+		else
+		{
+			$objItem = $objItem->save();
+			$this->arrItems[$strUuid] = $objItem;
+			$this->arrIds[]   = $strUuid; // Store the id, too!
+			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_item'], $objItem->getTitle()), WATCHLIST_NOTIFICATION_ADD_ITEM);
 		}
 	}
 
 	/**
 	 * Changes an item already in the watchlist
-	 * @param WatchlistItem $item
+	 * @param WatchlistItemModel $objItem
 	 */
-	public function updateItem(WatchlistItem $item)
+	public function updateItem(WatchlistItemModel $objItem, $strUuid)
 	{
-		// Need the unique item id:
-		$id = $item->getUid();
-
-		$this->arrItems[$id] = $item;
+		$this->arrItems[$strUuid] = $objItem;
 	}
 
 	/**
@@ -372,7 +378,7 @@ class Watchlist extends \System implements \Iterator, \Countable
 		// Need the unique item id:
 		// Remove it:
 		if (isset($this->arrItems[$id])) {
-			$item = $this->arrItems[$id];
+			$objItem = $this->arrItems[$id];
 
 			unset($this->arrItems[$id]);
 
@@ -383,9 +389,9 @@ class Watchlist extends \System implements \Iterator, \Countable
 			// Recreate that array to prevent holes:
 			$this->arrIds = array_values($this->arrIds);
 
-			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_item'], $item->title), WATCHLIST_NOTIFICATION_DELETE_ITEM);
+			$this->addNotification(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_item'], $objItem->getTitle()), WATCHLIST_NOTIFICATION_DELETE_ITEM);
 
-			$item->delete();
+			$objItem->delete();
 		}
 	}
 

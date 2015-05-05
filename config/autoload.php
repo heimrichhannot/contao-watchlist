@@ -30,10 +30,6 @@ ClassLoader::addClasses(array
 	// Modules
 	'HeimrichHannot\Watchlist\ModuleWatchlist'            => 'system/modules/watchlist/modules/ModuleWatchlist.php',
 
-	// Code
-	'ShoppingCart'                                        => 'system/modules/watchlist/code/ShoppingCart.php',
-	'Item'                                                => 'system/modules/watchlist/code/Item.php',
-
 	// Classes
 	'HeimrichHannot\Watchlist\WatchlistItemDownloads'     => 'system/modules/watchlist/classes/views/WatchlistItemDownloads.php',
 	'HeimrichHannot\Watchlist\WatchlistItemDefault'       => 'system/modules/watchlist/classes/views/WatchlistItemDefault.php',
@@ -42,7 +38,6 @@ ClassLoader::addClasses(array
 	'HeimrichHannot\Watchlist\Watchlist'                  => 'system/modules/watchlist/classes/core/Watchlist.php',
 	'HeimrichHannot\Watchlist\WatchlistItemView'          => 'system/modules/watchlist/classes/core/WatchlistItemView.php',
 	'HeimrichHannot\Watchlist\WatchlistItemViewInterface' => 'system/modules/watchlist/classes/core/WatchlistItemViewInterface.php',
-	'HeimrichHannot\Watchlist\WatchlistItem'              => 'system/modules/watchlist/classes/core/WatchlistItem.php',
 ));
 
 

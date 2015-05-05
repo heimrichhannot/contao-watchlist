@@ -73,33 +73,31 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 		return $objT->parse();
 	}
 
-	public function generateAddActions($arrData, $id, Watchlist $objWatchlist)
+	public function generateAddActions($arrData, $strUuid, Watchlist $objWatchlist)
 	{
 		global $objPage;
 
 		if ($objPage === null) return;
 
-		$objContent = \ContentModel::findByPk($arrData['id']);
-
-		// inserttag download support
-		$blnInsertTag = \Validator::isUuid($id);
-
-		if ($objContent === null && !$blnInsertTag) return;
-
-		$objFile = \FilesModel::findByUuid($blnInsertTag ? $id : $objContent->singleSRC);
+		$objFile = \FilesModel::findByUuid($strUuid);
 
 		if ($objFile === null) return;
 
-
-		$objItem = new WatchlistItem($objFile->id, $objPage->id, $arrData['id'], $arrData['type'] , ($blnInsertTag && $arrData['linkTitle']) ? $arrData['linkTitle'] :  '');
+		$objItem = new WatchlistItemModel();
+		$objItem->pid = Watchlist::getInstance()->getId();
+		$objItem->uuid = $objFile->uuid;
+		$objItem->pageID = $objPage->id;
+		$objItem->cid = $arrData['id'];
+		$objItem->type = $arrData['type'];
+		$objItem->title = $arrData['linkTitle'] ? $arrData['linkTitle'] : '';
 
 		$objT = new \FrontendTemplate('watchlist_add_actions');
 
-		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $objItem->getCid() . '&type=' . $objItem->getType() . '&id=' . $objItem->getId() . '&title=' . urlencode($objItem->getTitle()));
+		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&cid=' . $objItem->cid . '&type=' . $objItem->type . '&id=' . $strUuid . '&title=' . urlencode($objItem->getTitle()));
 		$objT->addTitle = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
 		$objT->addLink = $GLOBALS['TL_LANG']['WATCHLIST']['addLink'];
-		$objT->active = $objWatchlist->isInList($objItem->getUid());
-		$objT->id = $objItem->getUid();
+		$objT->active = $objWatchlist->isInList($strUuid);
+		$objT->id = $strUuid;
 
 		return $objT->parse();
 	}
@@ -123,7 +121,7 @@ class WatchlistItemDownload extends WatchlistItemDefault implements WatchlistIte
 
 		$objFile = new \File($objFileModel->path, true);
 
-		$objContent = \ContentModel::findByPk($objItem->getCid());
+		$objContent = \ContentModel::findByPk($objItem->cid);
 
 		$linkTitle = specialchars($objFile->name);
 

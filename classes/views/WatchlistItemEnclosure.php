@@ -27,24 +27,30 @@ class WatchlistItemEnclosure extends WatchlistItemDownload implements WatchlistI
 			$objFile = \FilesModel::findBy('path', $id);
 		}
 
-		if($objFile === null) return;
 
-		$objItem = new WatchlistItem(\String::binToUuid($objFile->uuid), $objPage->id, $arrData['id'], $arrData['type']);
+		$strUuid = \String::binToUuid($objFile->uuid);
+
+		$objItem = new WatchlistItemModel();
+		$objItem->pid = Watchlist::getInstance()->getId();
+		$objItem->uuid = $objFile->uuid;
+		$objItem->pageID = $objPage->id;
+		$objItem->cid = $arrData['id'];
+		$objItem->type = $arrData['type'];
 
 		$objT = new \FrontendTemplate('watchlist_add_actions');
 
-		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&hash=' . $objWatchlist->getHash() . '&cid=' . $objItem->getCid() . '&type=' . $objItem->getType() . '&id=' . $objItem->getId()  . '&title=' . urlencode($objItem->getTitle()));
+		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&cid=' . $objItem->cid . '&type=' . $objItem->type . '&id=' . $strUuid  . '&title=' . urlencode($objItem->getTitle()));
 		$objT->addTitle = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
 		$objT->addLink = $GLOBALS['TL_LANG']['WATCHLIST']['addLink'];
 
-		$objT->active = $objWatchlist->isInList($objItem->getId());
+		$objT->active = $objWatchlist->isInList($strUuid);
 
 		return $objT->parse();
 	}
 
 	public function getTitle(WatchlistItemModel $objItem)
 	{
-		$objFileModel = \FilesModel::findByPk($objItem->getId());
+		$objFileModel = \FilesModel::findById($objItem->uuid);
 
 		if ($objFileModel === null) return;
 

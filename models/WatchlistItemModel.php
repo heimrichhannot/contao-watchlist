@@ -37,4 +37,20 @@ class WatchlistItemModel extends \Model
 		return static::findOneBy(array("$t.pid=?", "$t.uuid=UNHEX(?)"), array($intPid, bin2hex($strUuid)), $arrOptions);
 	}
 
+
+	public function getTitle()
+	{
+		if($this->title != '') return $this->title;
+
+		// get view class by type
+		$strClass = $GLOBALS['WLV'][$this->type];
+
+		if (!class_exists($strClass)) return;
+
+		$strategy = new $strClass();
+
+		$view = new WatchlistItemView($strategy);
+
+		return $view->getTitle($this);
+	}
 }
