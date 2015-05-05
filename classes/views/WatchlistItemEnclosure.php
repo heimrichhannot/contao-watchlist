@@ -42,8 +42,8 @@ class WatchlistItemEnclosure extends WatchlistItemDownload implements WatchlistI
 		$objT->addHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_ADD . '&cid=' . $objItem->cid . '&type=' . $objItem->type . '&id=' . $strUuid  . '&title=' . urlencode($objItem->getTitle()));
 		$objT->addTitle = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
 		$objT->addLink = $GLOBALS['TL_LANG']['WATCHLIST']['addLink'];
-
 		$objT->active = $objWatchlist->isInList($strUuid);
+		$objT->id = $strUuid;
 
 		return $objT->parse();
 	}
