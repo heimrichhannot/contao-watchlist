@@ -27,6 +27,8 @@ class WatchlistItemEnclosure extends WatchlistItemDownload implements WatchlistI
 			$objFile = \FilesModel::findBy('path', $id);
 		}
 
+        $strUuid = \StringUtil::binToUuid($objFile->uuid);
+
 		$objItem = new WatchlistItemModel();
 		$objItem->pid = Watchlist::getInstance()->getId();
 		$objItem->uuid = $objFile->uuid;
