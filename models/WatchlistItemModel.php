@@ -31,7 +31,7 @@ class WatchlistItemModel extends \Model
 		// Convert UUIDs to binary
 		if (\Validator::isStringUuid($strUuid))
 		{
-			$strUuid = \String::uuidToBin($strUuid);
+			$strUuid = \StringUtil::uuidToBin($strUuid);
 		}
 
 		return static::findOneBy(array("$t.pid=?", "$t.uuid=UNHEX(?)"), array($intPid, bin2hex($strUuid)), $arrOptions);

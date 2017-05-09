@@ -27,10 +27,10 @@ class WatchlistItemDefault implements WatchlistItemViewInterface
 
 		$objT = new \FrontendTemplate('watchlist_edit_actions');
 
-		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&id=' . \String::binToUuid($objItem->uuid) . '&title=' . urlencode($objItem->title));
+		$objT->delHref = ampersand(\Controller::generateFrontendUrl($objPage->row()) . '?act=' . WATCHLIST_ACT_DELETE . '&id=' . \StringUtil::binToUuid($objItem->uuid) . '&title=' . urlencode($objItem->title));
 		$objT->delTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delTitle'];
 		$objT->delLink = $GLOBALS['TL_LANG']['WATCHLIST']['delLink'];
-		$objT->id = \String::binToUuid($objItem->uuid);
+		$objT->id = \StringUtil::binToUuid($objItem->uuid);
 
 		return $objT->parse();
 	}

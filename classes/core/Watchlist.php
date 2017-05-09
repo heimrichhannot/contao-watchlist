@@ -69,7 +69,7 @@ class Watchlist extends \System implements \Iterator, \Countable
 			while($objItems->next())
 			{
 				// set key by unique uuid
-				$strKey = \String::binToUuid($objItems->uuid);
+				$strKey = \StringUtil::binToUuid($objItems->uuid);
 				$this->arrItems[$strKey] = $objItems->current();
 				$this->arrIds[] = $strKey;
 			}
@@ -284,7 +284,7 @@ class Watchlist extends \System implements \Iterator, \Countable
 					$href = $pages[$i]['url'];
 
 					if (strncasecmp($href, 'mailto:', 7) === 0) {
-						$href = \String::encodeEmail($href);
+						$href = \StringUtil::encodeEmail($href);
 					}
 					break;
 
@@ -343,7 +343,7 @@ class Watchlist extends \System implements \Iterator, \Countable
 
 		$strUuid = $objItem->uuid;
 
-		$objItem->uuid = \String::uuidToBin($objItem->uuid); // transform string to bin
+		$objItem->uuid = \StringUtil::uuidToBin($objItem->uuid); // transform string to bin
 
 		// Add or delete:
 		if (isset($this->arrItems[$strUuid]))
