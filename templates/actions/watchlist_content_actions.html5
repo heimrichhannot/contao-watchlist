@@ -1,2 +1,0 @@
-<?php // see @ block_searchable.html, actions invoked there ?>
-<?php echo \HeimrichHannot\Watchlist\WatchlistController::getInstance()->generateAddActions($this->getData(), $this->id); ?>
