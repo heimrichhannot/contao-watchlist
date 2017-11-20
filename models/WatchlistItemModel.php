@@ -1,56 +1,62 @@
 <?php
 /**
  * Contao Open Source CMS
- * 
+ *
  * Copyright (c) 2015 Heimrich & Hannot GmbH
+ *
  * @package markenportal
- * @author Rico Kaltofen <r.kaltofen@heimrich-hannot.de>
+ * @author  Rico Kaltofen <r.kaltofen@heimrich-hannot.de>
  * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
  */
 
 namespace HeimrichHannot\Watchlist;
 
 
-class WatchlistItemModel extends \Model
+class WatchlistItemModel extends \Contao\Model
 {
-	protected static $strTable = 'tl_watchlist_item';
+    const WATCHLIST_ITEM_TYPE_DOWNLOAD    = 'download';
+    const WATCHLIST_ITEM_TYPE_NO_DOWNLOAD = 'no_download';
 
-	/**
-	 * Find a watchlist item by its pid and uuid
-	 *
-	 * @param string $intPid    The watchlist id
-	 * @param string $intUuid   The files uuid
-	 * @param array  $arrOptions An optional options array
-	 *
-	 * @return \Model|null The model or null if there is no watchlist
-	 */
-	public static function findByPidAndUuid($intPid, $strUuid, array $arrOptions=array())
-	{
-		$t = static::$strTable;
+    protected static $strTable = 'tl_watchlist_item';
 
-		// Convert UUIDs to binary
-		if (\Validator::isStringUuid($strUuid))
-		{
-			$strUuid = \StringUtil::uuidToBin($strUuid);
-		}
+    /**
+     * Find a watchlist item by its pid and uuid
+     *
+     * @param       $intPid
+     * @param       $strUuid
+     * @param array $arrOptions
+     *
+     * @return static
+     */
+    public static function findByPidAndUuid($intPid, $strUuid, array $arrOptions = [])
+    {
+        $t = static::$strTable;
 
-		return static::findOneBy(array("$t.pid=?", "$t.uuid=UNHEX(?)"), array($intPid, bin2hex($strUuid)), $arrOptions);
-	}
+        // Convert UUIDs to binary
+        if (\Validator::isStringUuid($strUuid)) {
+            $strUuid = \StringUtil::uuidToBin($strUuid);
+        }
 
+        return static::findOneBy(["$t.pid=?", "$t.uuid=UNHEX(?)"], [$intPid, bin2hex($strUuid)], $arrOptions);
+    }
 
-	public function getTitle()
-	{
-		if($this->title != '') return $this->title;
+    /**
+     * Find a watchlist item by its pid and uuid
+     *
+     * @param       $strUuid
+     * @param array $arrOptions
+     *
+     * @return static
+     */
+    public static function findByUuid($strUuid, array $arrOptions = [])
+    {
+        $t = static::$strTable;
 
-		// get view class by type
-		$strClass = $GLOBALS['WLV'][$this->type];
+        // Convert UUIDs to binary
+        if (\Validator::isStringUuid($strUuid)) {
+            $strUuid = \StringUtil::uuidToBin($strUuid);
+        }
 
-		if (!class_exists($strClass)) return;
-
-		$strategy = new $strClass();
-
-		$view = new WatchlistItemView($strategy);
-
-		return $view->getTitle($this);
-	}
+        return static::findOneBy(["$t.uuid=UNHEX(?)"], bin2hex($strUuid), $arrOptions);
+    }
 }

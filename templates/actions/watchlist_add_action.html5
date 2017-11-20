@@ -1,0 +1,4 @@
+<button class="<?= $this->added ?>" id="watchlist-add-<?= $this->id ?>" data-id="<?= $this->id; ?>" data-watchlist-add-action="<?= $this->addHref; ?>"
+        title="<?= $this->addTitle; ?>">
+    <span><?= $this->addLink; ?></span>
+</button>

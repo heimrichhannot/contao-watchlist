@@ -1,0 +1,21 @@
+<div class="watchlist-download-list-item">
+    <?php if ($this->isImage): ?>
+        <figure class="image_container">
+            <?php if ($this->picture): ?>
+                <?php $this->insert('picture_default', $this->picture); ?>
+            <?php else: ?>
+                <img src="<?= $this->image ?>"/>
+            <?php endif; ?>
+        </figure>
+    <?php endif; ?>
+    <div class="watchlist-download-list-item-title"><?= $this->title ?></div>
+    <?php if ($this->copright !== null): ?>
+        <div><?= $this->copyright ?></div>
+    <?php endif; ?>
+    <?php if ($this->download): ?>
+        <div><?= $this->filesize ?></div>
+        <button data-watchlist-download-item-action="<?= $this->downloadLink ?>" class="watchlist-download-item-button watchlist-download-list-item-download" id="watchlist-download-item-<?= $this->id ?>" data-id="<?= $this->id; ?>"><?= $this->downloadTitle ?></button>
+    <?php else: ?>
+        <span><?= $this->noDownload ?></span>
+    <?php endif ?>
+</div>

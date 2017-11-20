@@ -11,6 +11,8 @@
 namespace HeimrichHannot\Watchlist;
 
 
+use HeimrichHannot\Watchlist\Controller\WatchlistController;
+
 class WatchlistItemView
 {
 	private $_strategy;
@@ -22,17 +24,17 @@ class WatchlistItemView
 		$this->_strategy = $strategy;
 	}
 
-	public function generate(WatchlistItemModel $objItem, Watchlist $objWatchlist)
+	public function generate(WatchlistItemModel $objItem, WatchlistController $objWatchlist)
 	{
 		return $this->_strategy->generate($objItem, $objWatchlist);
 	}
 
-	public function generateEditActions(WatchlistItemModel $objItem, Watchlist $objWatchlist)
+	public function generateEditActions(WatchlistItemModel $objItem, WatchlistController $objWatchlist)
 	{
 		return $this->_strategy->generateEditActions($objItem, $objWatchlist);
 	}
 
-	public function generateAddActions($arrData, $id, Watchlist $objWatchlist)
+	public function generateAddActions($arrData, $id, WatchlistController $objWatchlist)
 	{
 		return $this->_strategy->generateAddActions($arrData, $id, $objWatchlist);
 	}

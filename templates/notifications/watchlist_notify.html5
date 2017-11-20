@@ -1,0 +1,1 @@
+<div class="watchlist-notification <?= $this->cssClass ?>"><?php echo $this->notification; ?> <br/></div>

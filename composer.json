@@ -1,33 +1,40 @@
 {
-    "name": "heimrichhannot/contao-watchlist",
-    "description":"A contao watchlist, for download elements.",
-    "keywords":["contao", "watchlist", "downloads"],
-    "type": "contao-module",
-    "homepage":"https://github.com/heimrichhannot/contao-watchlist",
-    "license":"LGPL-3.0+",
-    "authors":[
-        {
-            "name":"Heimrich & Hannot",
-            "email":"digitales@heimrich-hannot.de",
-            "homepage":"http://www.heimrich-hannot.de",
-            "role":"Developer"
-        }
-    ],
-    "support":{
-        "issues":"https://github.com/heimrichhannot/contao-watchlist/issues"
-    },
-    "require": {
-        "php": "~5.4 || ~7.0",
-        "contao/core-bundle": "^3.5.1 || ~4.1"
-    },
-    "autoload": {
-        "classmap": [""]
-    },
-    "extra": {
-        "contao": {
-            "sources": {
-                "": "system/modules/watchlist"
-            }
-        }
+  "name": "heimrichhannot/contao-watchlist",
+  "description": "A contao watchlist, for download elements.",
+  "keywords": [
+    "contao",
+    "watchlist",
+    "downloads"
+  ],
+  "type": "contao-module",
+  "homepage": "https://github.com/heimrichhannot/contao-watchlist",
+  "license": "LGPL-3.0+",
+  "authors": [
+    {
+      "name": "Heimrich & Hannot",
+      "email": "digitales@heimrich-hannot.de",
+      "homepage": "http://www.heimrich-hannot.de",
+      "role": "Developer"
     }
+  ],
+  "support": {
+    "issues": "https://github.com/heimrichhannot/contao-watchlist/issues"
+  },
+  "require": {
+    "php": "~5.4 || ~7.0",
+    "contao/core-bundle": "^3.5.1 || ~4.1",
+    "heimrichhannot/contao-slick": "^1.5"
+  },
+  "autoload": {
+    "classmap": [
+      ""
+    ]
+  },
+  "extra": {
+    "contao": {
+      "sources": {
+        "": "system/modules/watchlist"
+      }
+    }
+  }
 }

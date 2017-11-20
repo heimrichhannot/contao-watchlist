@@ -1,6 +1,21 @@
 <div class="wl_download">
-	<img src="<?php echo $this->icon; ?>" width="18" height="18" alt="" class="mime_icon"> <a
-		href="<?php echo $this->href; ?>" title="<?php echo $this->title; ?>"><?php echo $this->link; ?> <span class="size">(<?php echo $this->filesize; ?>
-			)</span></a>
-	<?php echo $this->actions; ?>
+    <?php if ($this->isImage): ?>
+        <figure class="image_container">
+            <?php if ($this->picture): ?>
+                <?php $this->insert('picture_default', $this->picture); ?>
+            <?php else: ?>
+                <img src="<?= $this->image ?>"/>
+            <?php endif; ?>
+        </figure>
+    <?php endif; ?>
+    <?php if ($this->download) : ?>
+        <div>
+            <button class="watchlist-download-item-button" id="watchlist-download-item-<?= $this->id ?>" data-id="<?= $this->id; ?>" data-watchlist-download-item-action="<?php echo $this->href; ?>" title="<?php echo $this->title; ?>"><?php echo $this->link; ?>
+            </button>
+        </div>
+        <div><span class="size"><?php echo $this->filesize; ?></span></div>
+    <?php else: ?>
+        <div class="watchlist-no-download-item"><?php echo $this->link; ?></div>
+    <?php endif; ?>
+    <div><?php echo $this->actions; ?></div>
 </div>

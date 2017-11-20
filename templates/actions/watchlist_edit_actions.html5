@@ -1,1 +1,1 @@
-<a class="watchlist-delete" data-update="#watchlist .watchlist-body" data-id="<?php echo $this->id; ?>" data-notify="#watchlist-notify" data-badge="#watchlist-badge" data-action="watchlist-update" href="<?php echo $this->delHref; ?>" title="<?php echo $this->delTitle; ?>"><span><?php echo $this->delLink; ?></span></a>
+<button class="watchlist-delete-item" id="watchlist-delete-item-<?= $this->id ?>" data-id="<?= $this->id; ?>" data-watchlist-delete-action="<?php echo $this->delHref; ?>" title="<?php echo $this->delTitle; ?>"><span><?php echo $this->delLink; ?></span></button>

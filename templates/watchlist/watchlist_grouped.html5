@@ -1,16 +1,18 @@
-<?php if ($this->empty): ?>
-	<p><?php echo $this->empty; ?></p>
-<?php else: ?>
-	<ul class="watchlist">
-		<?php foreach ($this->items as $group => $childrens): ?>
-			<li class="group"><?php echo $childrens['page']; ?>
-				<ul class="children">
-					<?php foreach ($childrens['items'] as $id => $item): ?>
-						<?php echo $item; ?>
-					<?php endforeach; ?>
-				</ul>
-			</li>
-		<?php endforeach; ?>
-	</ul>
-	<?php echo $this->actions; ?>
-<?php endif; ?>
+<div class="watchlist-body">
+    <?php if ($this->empty): ?>
+        <p><?php echo $this->empty; ?></p>
+    <?php else: ?>
+        <div class="watchlist-item-list">
+            <?php foreach ($this->items as $group => $childrens): ?>
+                <div class="group"><?php echo $childrens['page']; ?>
+                    <div class="children <?= $this->css ?>">
+                        <?php foreach ($childrens['items'] as $id => $item): ?>
+                            <?php echo $item; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <?php echo $this->actions; ?>
+    <?php endif; ?>
+</div>

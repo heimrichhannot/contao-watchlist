@@ -1,12 +1,14 @@
-<ul class="parents">
-<?php foreach($this->items as $i => $item): ?>
-	<?php if($item['isRoot']) continue; ?>
-	<li <?php if($item['class']): ?>class="<?php echo $item['class']; ?>" <?php endif; ?>title="<?php echo $item['title']; ?>">
-		<?php if($item['isActive']): ?>
-			<a href="<?php echo $item['href']; ?>"><?php echo $item['link']; ?></a>
-		<?php else: ?>
-			<?php echo $item['link']; ?> &raquo;
-		<?php endif; ?>
-	</li>
-<?php endforeach; ?>
-</ul>
+<div class="parents">
+    <?php foreach ($this->items as $i => $item): ?>
+        <?php if ($item['isRoot']) {
+            continue;
+        } ?>
+        <div <?php if ($item['class']): ?>class="<?php echo $item['class']; ?>" <?php endif; ?>title="<?php echo $item['title']; ?>">
+            <?php if ($item['isActive']): ?>
+                <a href="<?php echo $item['href']; ?>"><?php echo $item['link']; ?></a>
+            <?php else: ?>
+                <?php echo $item['link']; ?> &raquo;
+            <?php endif; ?>
+        </div>
+    <?php endforeach; ?>
+</div>

@@ -1,0 +1,15 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+    <h1><?= $this->downloadListHeadline ?></h1>
+<?php if ($this->empty): ?>
+    <p><?= $this->empty; ?></p>
+<?php else: ?>
+    <div class="watchlist-download-list">
+        <?php foreach ($this->items as $id => $item): ?>
+            <?= $item; ?>
+        <?php endforeach; ?>
+    </div>
+    <button data-watchlist-download-all-action="<?= $this->downloadAllHref; ?>" class="watchlist-download-all-button btn btn-primary watchlist-download-list-download-all" title="<?= $this->downloadAllTitle; ?>"><span><?= $this->downloadAllLink; ?></span></button>
+<?php endif; ?>
+<?php $this->endblock(); ?>

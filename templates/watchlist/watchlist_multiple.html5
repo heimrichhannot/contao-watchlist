@@ -1,0 +1,26 @@
+<div class="watchlist-body">
+    <div class="watchlist-select-container">
+        <div class="form-group">
+            <select id="watchlist-selector" data-watchlist-select-action="<?= $this->action ?>">
+                <?php if (empty($this->select)): ?>
+                    <option value="0"> -</option>
+                <?php else: ?>
+                    <?php foreach ($this->select as $key => $value): ?>
+                        <?php if ($key === intval($this->selected)): ?>
+                            <option value="<?= $key ?>" selected> <?= $value ?></option>
+                        <?php else: ?>
+                            <option value="<?= $key ?>"> <?= $value ?></option>
+                        <?php endif ?>
+                    <?php endforeach; ?>
+                <?php endif ?>
+            </select>
+        </div>
+    </div>
+    <div class="watchlist-container">
+        <?php if ($this->empty): ?>
+            <p><?php echo $this->empty; ?></p>
+        <?php else: ?>
+            <?= $this->watchlist ?>
+        <?php endif; ?>
+    </div>
+</div>

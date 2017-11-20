@@ -12,53 +12,42 @@
 /**
  * Register the namespaces
  */
-ClassLoader::addNamespaces(array
-(
-	'HeimrichHannot',
-));
+ClassLoader::addNamespaces([
+    'HeimrichHannot',
+]);
 
 
 /**
  * Register the classes
  */
-ClassLoader::addClasses(array
-(
-	// Models
-	'HeimrichHannot\Watchlist\WatchlistModel'             => 'system/modules/watchlist/models/WatchlistModel.php',
-	'HeimrichHannot\Watchlist\WatchlistItemModel'         => 'system/modules/watchlist/models/WatchlistItemModel.php',
+ClassLoader::addClasses([
+    // Models
+    'HeimrichHannot\Watchlist\WatchlistModel'              => 'system/modules/watchlist/models/WatchlistModel.php',
+    'HeimrichHannot\Watchlist\WatchlistItemModel'          => 'system/modules/watchlist/models/WatchlistItemModel.php',
 
-	// Modules
-	'HeimrichHannot\Watchlist\ModuleWatchlist'            => 'system/modules/watchlist/modules/ModuleWatchlist.php',
-
-	// Classes
-	'HeimrichHannot\Watchlist\WatchlistItemDownloads'     => 'system/modules/watchlist/classes/views/WatchlistItemDownloads.php',
-	'HeimrichHannot\Watchlist\WatchlistItemDefault'       => 'system/modules/watchlist/classes/views/WatchlistItemDefault.php',
-	'HeimrichHannot\Watchlist\WatchlistItemEnclosure'     => 'system/modules/watchlist/classes/views/WatchlistItemEnclosure.php',
-	'HeimrichHannot\Watchlist\WatchlistItemDownload'      => 'system/modules/watchlist/classes/views/WatchlistItemDownload.php',
-	'HeimrichHannot\Watchlist\Watchlist'                  => 'system/modules/watchlist/classes/core/Watchlist.php',
-	'HeimrichHannot\Watchlist\WatchlistItemView'          => 'system/modules/watchlist/classes/core/WatchlistItemView.php',
-	'HeimrichHannot\Watchlist\WatchlistItemViewInterface' => 'system/modules/watchlist/classes/core/WatchlistItemViewInterface.php',
-));
+    // Modules
+    'HeimrichHannot\Watchlist\ModuleWatchlist'             => 'system/modules/watchlist/modules/ModuleWatchlist.php',
+    'HeimrichHannot\Watchlist\ModuleWatchlistDownloadList' => 'system/modules/watchlist/modules/ModuleWatchlistDownloadList.php',
+]);
 
 
 /**
  * Register the templates
  */
-TemplateLoader::addFiles(array
-(
-	'watchlist_edit_actions'    => 'system/modules/watchlist/templates/actions',
-	'watchlist_content_actions' => 'system/modules/watchlist/templates/actions',
-	'watchlist_add_actions'     => 'system/modules/watchlist/templates/actions',
-	'watchlist_global_actions'  => 'system/modules/watchlist/templates/actions',
-	'news_full'                 => 'system/modules/watchlist/templates/news',
-	'mod_watchlist'             => 'system/modules/watchlist/templates/modules',
-	'watchlist_item'            => 'system/modules/watchlist/templates/items',
-	'watchlist_notify_default'  => 'system/modules/watchlist/templates/notifications',
-	'watchlist_grouped'         => 'system/modules/watchlist/templates/watchlist',
-	'watchlist'                 => 'system/modules/watchlist/templates/watchlist',
-	'ce_download_inserttag'     => 'system/modules/watchlist/templates/elements',
-	'ce_download'               => 'system/modules/watchlist/templates/elements',
-	'ce_downloads'              => 'system/modules/watchlist/templates/elements',
-	'watchlist_parents'         => 'system/modules/watchlist/templates/nav',
-	'watchlist_view_download'   => 'system/modules/watchlist/templates/views',
-));
+TemplateLoader::addFiles([
+    'watchlist_edit_actions'        => 'system/modules/watchlist/templates/actions',
+    'watchlist_add_action'          => 'system/modules/watchlist/templates/actions',
+    'watchlist_global_actions'      => 'system/modules/watchlist/templates/actions',
+    'mod_watchlist'                 => 'system/modules/watchlist/templates/modules',
+    'watchlist_item'                => 'system/modules/watchlist/templates/items',
+    'watchlist_notify'              => 'system/modules/watchlist/templates/notifications',
+    'watchlist_grouped'             => 'system/modules/watchlist/templates/watchlist',
+    'watchlist'                     => 'system/modules/watchlist/templates/watchlist',
+    'watchlist_parents'             => 'system/modules/watchlist/templates/nav',
+    'watchlist_view_download'       => 'system/modules/watchlist/templates/views',
+    'watchlist_multiple_add_action' => 'system/modules/watchlist/templates/actions',
+    'watchlist_multiple'            => 'system/modules/watchlist/templates/watchlist',
+    'watchlist_select_actions'      => 'system/modules/watchlist/templates/actions',
+    'watchlist_download_list_item'  => 'system/modules/watchlist/templates/items',
+    'mod_watchlist_download_list'   => 'system/modules/watchlist/templates/modules',
+]);

@@ -1,1 +1,1 @@
-<li class="<?php echo $this->cssClass; ?>"><?php echo $this->item; ?><?php echo $this->actions; ?></li>
+<div class="watchlist-list-item <?php echo $this->cssClass; ?>"><?= $this->item; ?><?= $this->actions; ?></div>

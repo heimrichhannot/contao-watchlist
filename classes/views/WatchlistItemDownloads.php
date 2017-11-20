@@ -11,10 +11,12 @@
 namespace HeimrichHannot\Watchlist;
 
 
+use HeimrichHannot\Watchlist\Controller\WatchlistController;
+
 class WatchlistItemDownloads extends WatchlistItemDownload implements WatchlistItemViewInterface
 {
 
-	public function generateAddActions($arrData, $strUuid, Watchlist $objWatchlist)
+	public function generateAddActions($arrData, $strUuid, WatchlistController $objWatchlist)
 	{
 		global $objPage;
 
@@ -25,7 +27,7 @@ class WatchlistItemDownloads extends WatchlistItemDownload implements WatchlistI
 		if($objFile === null) return;
 
 		$objItem = new WatchlistItemModel();
-		$objItem->pid = Watchlist::getInstance()->getId();
+		$objItem->pid = WatchlistController::getInstance()->getId();
 		$objItem->uuid = $objFile->uuid;
 		$objItem->pageID = $objPage->id;
 		$objItem->cid = $arrData['id'];
