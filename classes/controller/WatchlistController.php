@@ -165,9 +165,10 @@ class WatchlistController
             return false;
         }
 
-        $strFile = 'download_' . $watchlistModel->hash;
+        $path    = 'files/tmp/';
+        $strFile = 'download_' . $watchlistModel->hash . '.zip';
 
-        $objZip = new \ZipWriter('files/tmp/' . $strFile);
+        $objZip = new \ZipWriter($path . $strFile);
 
         foreach ($objItems as $item) {
 
@@ -181,9 +182,9 @@ class WatchlistController
         $objZip->close();
 
         // Open the "save as …" dialogue
-        $objFile = new \File('files/tmp/' . $strFile, true);
+        $objFile = new \File($path . $strFile, true);
 
-        return 'files/tmp/' . $strFile;
+        return $path . $strFile;
     }
 
     /**

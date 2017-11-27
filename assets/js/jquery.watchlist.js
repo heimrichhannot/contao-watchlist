@@ -145,7 +145,11 @@
                     url: $('.watchlist-download-all-button').data('watchlistDownloadAllAction'),
                     success: function(data, textStatus, jqXHR) {
                         if (data.result.html !== false) {
-                            window.open(data.result.html);
+                            // window.open(data.result.html);
+                            var link = document.createElement('a');
+                            link.href = data.result.html;
+                            link.download = data.result.html.substr(data.result.html.lastIndexOf('/') + 1);
+                            link.click();
                         }
                     }
                 });
@@ -181,7 +185,9 @@
         },
         registerSlick: function() {
             $('#watchlist').on('shown.bs.collapse', function() {
-                $('.watchlist-item-image-list').slick('setPosition');
+                if ($('.watchlist-list-item').length > 4) {
+                    $('.watchlist-item-image-list').slick('setPosition');
+                }
             });
             $(document).ready(function() {
                 Watchlist.initSlick();

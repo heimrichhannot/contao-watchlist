@@ -1,7 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.0.2] - 2017-11-20
+## [2.0.3] - 2017-11-27
+
+### Fixed
+- download all
+
+### Added
+- startedShare
+
+## [2.0.2] - 2017-11-27
 
 ### Fixed
 - collapse and slick slider

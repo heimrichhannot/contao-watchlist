@@ -279,7 +279,7 @@ class WatchlistModel extends \Contao\Model
             }
             Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, $watchlistModel->id);
         } else {
-            $watchlistModel = static::findOneBy(['id=?', 'pid=?', 'published=?'], [$watchlistId, $user->id, '1']);
+            $watchlistModel = static::findOneBy(['id=?', 'published=?'], [$watchlistId, '1']);
         }
         if ($watchlistModel === null) {
             $watchlistModel = static::findPublishedByPid($user->id, 1);

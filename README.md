@@ -5,9 +5,10 @@ A contao watchlist, for download elements.
 ## Features
 
 * use single or multiple watchlist
-* generate link to watchlist
+* generate link to watchlist (durability 30 days)
 * define durability of the watchlist
 * users of the same group can use same watchlist
+* download watchlist items and watchlist
 
 ## Installation
 Install via composer

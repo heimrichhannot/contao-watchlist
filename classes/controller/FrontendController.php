@@ -183,6 +183,10 @@ class FrontendController extends Controller
         if ($watchlist === null) {
             return $objResponse;
         }
+        if ($watchlist->startedShare == '') {
+            $watchlist->startedShare = strtotime('today');
+            $watchlist->save();
+        }
         $url = $pageModel->getAbsoluteUrl('?watchlist=' . $watchlist->uuid);
         $objResponse->setResult(new ResponseData($url));
 
@@ -215,7 +219,7 @@ class FrontendController extends Controller
         }
 
         if ($module->useMultipleWatchlist) {
-            $watchlist = WatchlistModel::getMultipleWatchlistModel();
+            $watchlist         = WatchlistModel::getMultipleWatchlistModel();
             $watchlistTemplate = Watchlist::getMultipleWatchlist($watchlist, $moduleId);
         } else {
             $watchlist         = WatchlistModel::getWatchlistModel();

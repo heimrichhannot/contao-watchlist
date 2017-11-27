@@ -25,38 +25,41 @@ $GLOBALS['TL_DCA']['tl_watchlist'] = [
     ],
     // Fields
     'fields' => [
-        'id'        => [
+        'id'           => [
             'sql' => "int(10) unsigned NOT NULL auto_increment",
         ],
-        'pid'       => [
+        'pid'          => [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'tstamp'    => [
+        'tstamp'       => [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'name'      => [
+        'name'         => [
             'sql' => "varchar(255) NOT NULL default ''",
         ],
-        'sessionID' => [
+        'sessionID'    => [
             'sql' => "varchar(128) NOT NULL default ''",
         ],
-        'hash'      => [
+        'hash'         => [
             'sql' => "varchar(40) NULL",
         ],
-        'ip'        => [
+        'ip'           => [
             'sql' => "varchar(64) NOT NULL default ''",
         ],
-        'published' => [
+        'published'    => [
             'sql' => "char(1) NOT NULL default ''",
         ],
-        'start'     => [
+        'start'        => [
             'sql' => "varchar(10) NOT NULL default ''",
         ],
-        'stop'      => [
+        'stop'         => [
             'sql' => "varchar(10) NOT NULL default ''",
         ],
-        'uuid'      => [
+        'uuid'         => [
             'sql' => "varchar(36) NOT NULL default ''",
+        ],
+        'startedShare' => [
+            'sql' => "varchar(10) NOT NULL default ''",
         ],
     ],
 ];

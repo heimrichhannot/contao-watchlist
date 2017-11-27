@@ -40,8 +40,17 @@ class ModuleWatchlistDownloadList extends \Module
 
     protected function compile()
     {
-        $id    = \Input::get('watchlist');
-        $items = $this->getWatchlistItems($id);
+        /** @var \PageModel $objPage */
+        global $objPage;
+
+        $id        = \Input::get('watchlist');
+        $watchlist = WatchlistModel::findBy(['uuid=?', 'published=?'], [$id, '1']);
+        if (!$this->checkWatchlistValidity($watchlist)) {
+            /** @var \PageError404 $objHandler */
+            $objHandler = new $GLOBALS['TL_PTY']['error_404']();
+            $objHandler->generate($objPage->id);
+        }
+        $items = $this->getWatchlistItems($watchlist);
         if (empty($items)) {
             $this->Template->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
         }
@@ -52,10 +61,9 @@ class ModuleWatchlistDownloadList extends \Module
         $this->Template->downloadListHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['downloadListHeadline'];
     }
 
-    public function getWatchlistItems($pid)
+    public function getWatchlistItems($watchlist)
     {
-        $arrItems  = [];
-        $watchlist = WatchlistModel::findBy(['uuid=?', 'published=?'], [$pid, '1']);
+        $arrItems = [];
 
         if ($watchlist === null) {
             return $arrItems;
@@ -126,5 +134,23 @@ class ModuleWatchlistDownloadList extends \Module
         $objT->noDownload    = $GLOBALS['TL_LANG']['WATCHLIST']['noDownload'];
 
         return $objT->parse();
+    }
+
+    /**
+     * check if the startedShare date is <= 30
+     *
+     * @param $watchlist
+     *
+     * @return bool
+     */
+    protected function checkWatchlistValidity($watchlist)
+    {
+        $difference = (strtotime('tomorrow') - $watchlist->startedShare) / (60 * 60 * 24);
+
+        if ($difference <= 30) {
+            return true;
+        }
+
+        return false;
     }
 }
