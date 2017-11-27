@@ -3,7 +3,7 @@
 <?php $this->block('content'); ?>
 
     <div id="watchlist-wrapper" class="<?= $this->cssClass; ?>" data-count="<?= $this->count; ?>">
-        <button type="button" class="watchlist-toggle collapsed" data-toggle="collapse" data-target="#watchlist" data-watchlist-update-action="<?= $this->updateHref; ?>">
+        <button type="button" class="watchlist-toggle" data-toggle="collapse" data-target="#watchlist" data-watchlist-update-action="<?= $this->updateHref; ?>">
             <span id="watchlist-badge" class="badge pull-right"><?= $this->count; ?></span>
             <?= $this->toggleLink; ?>
         </button>

@@ -215,7 +215,11 @@ class FrontendController extends Controller
         }
 
         if ($module->useMultipleWatchlist) {
-            $watchlist         = WatchlistModel::getMultipleWatchlistModel();
+            $watchlistId = Session::getInstance()->get(WatchlistController::WATCHLIST_SELECT);
+            $watchlist   = WatchlistModel::findByPk($watchlistId);
+            if ($watchlist == null) {
+                $watchlist = WatchlistModel::getMultipleWatchlistModel();
+            }
             $watchlistTemplate = Watchlist::getMultipleWatchlist($watchlist, $moduleId);
         } else {
             $watchlist         = WatchlistModel::getWatchlistModel();
