@@ -55,7 +55,7 @@ class ModuleWatchlistDownloadList extends \Module
             $this->Template->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
         }
         $this->Template->items                = $items;
-        $this->Template->downloadAllHref      = AjaxAction::generateUrl(WatchlistController::XHR_GROUP, WatchlistController::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, ['id' => $id]);
+        $this->Template->downloadAllHref      = AjaxAction::generateUrl(WatchlistController::XHR_GROUP, WatchlistController::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, ['id' => $watchlist->id]);
         $this->Template->downloadAllLink      = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAll'];
         $this->Template->downloadAllTitle     = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllSecondTitle'];
         $this->Template->downloadListHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['downloadListHeadline'];

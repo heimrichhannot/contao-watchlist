@@ -159,10 +159,13 @@ class FrontendController extends Controller
     {
         $objResponse = new ResponseSuccess();
         $objResponse->setResult(new ResponseData(false));
+        
         if ($id === '0') {
             $id = Session::getInstance()->get(Watchlist::WATCHLIST_SELECT);
         }
+	
         $watchlistModel = WatchlistModel::findById($id);
+        
         if ($watchlistModel === null) {
             return $objResponse;
         }

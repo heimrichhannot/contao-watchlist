@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.4] - 2017-11-27
+
+### Fixed
+- added correct id for watchlist in download all 
+
 ## [2.0.3] - 2017-11-27
 
 ### Fixed
