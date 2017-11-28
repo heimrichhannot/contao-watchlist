@@ -28,7 +28,6 @@ class FrontendController extends Controller
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_UPDATE_MODAL_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_LINK_ACTION, $this);
-        Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_ITEM_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_MULTIPLE_SELECT_ADD_ACTION, $this);
     }
 
@@ -159,13 +158,10 @@ class FrontendController extends Controller
     {
         $objResponse = new ResponseSuccess();
         $objResponse->setResult(new ResponseData(false));
-        
         if ($id === '0') {
             $id = Session::getInstance()->get(Watchlist::WATCHLIST_SELECT);
         }
-	
         $watchlistModel = WatchlistModel::findById($id);
-        
         if ($watchlistModel === null) {
             return $objResponse;
         }
@@ -192,19 +188,6 @@ class FrontendController extends Controller
         }
         $url = $pageModel->getAbsoluteUrl('?watchlist=' . $watchlist->uuid);
         $objResponse->setResult(new ResponseData($url));
-
-        return $objResponse;
-    }
-
-    public function watchlistDownloadItemAction($id)
-    {
-        $objResponse = new ResponseSuccess();
-        $objResponse->setResult(new ResponseData(false));
-        $watchlistItem = WatchlistItemModel::findByUuid($id);
-        if ($watchlistItem == null) {
-            return $objResponse;
-        }
-        $objResponse->setResult(new ResponseData(WatchlistController::downloadItem($watchlistItem->uuid)));
 
         return $objResponse;
     }

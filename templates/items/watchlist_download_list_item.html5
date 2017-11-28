@@ -14,7 +14,7 @@
     <?php endif; ?>
     <?php if ($this->download): ?>
         <div><?= $this->filesize ?></div>
-        <button data-watchlist-download-item-action="<?= $this->downloadLink ?>" class="watchlist-download-item-button watchlist-download-list-item-download" id="watchlist-download-item-<?= $this->id ?>" data-id="<?= $this->id; ?>"><?= $this->downloadTitle ?></button>
+        <a class="watchlist-download-item-button watchlist-download-list-item-download" href="<?= $this->downloadLink ?>"><?= $this->downloadTitle ?></a>
     <?php else: ?>
         <span><?= $this->noDownload ?></span>
     <?php endif ?>

@@ -31,9 +31,14 @@ class ModuleWatchlistDownloadList extends \Module
         }
         $GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js|static';
 
+        if (\Input::get('file')) {
+            \Contao\Controller::sendFileToBrowser(\Input::get('file'));
+        }
+
         if (!\Input::get('watchlist')) {
             return '';
         }
+
 
         return parent::generate();
     }
@@ -83,6 +88,14 @@ class ModuleWatchlistDownloadList extends \Module
 
     public function prepareItem($item)
     {
+        /** @var $objPage \Contao\PageModel */
+        global $objPage;
+
+        $basePath = $objPage->getFrontendUrl();
+        if (\Input::get('watchlist')) {
+            $basePath .= '?watchlist=' . \Input::get('watchlist');
+        }
+
         $objT           = new FrontendTemplate('watchlist_download_list_item');
         $objT->download = true;
 
@@ -129,7 +142,7 @@ class ModuleWatchlistDownloadList extends \Module
         $objT->title         = $item->title;
         $objT->id            = \StringUtil::binToUuid($item->uuid);
         $objT->filesize      = \System::getReadableSize($objFile->filesize, 1);
-        $objT->downloadLink  = \HeimrichHannot\Ajax\AjaxAction::generateUrl(\HeimrichHannot\Watchlist\Controller\WatchlistController::XHR_GROUP, \HeimrichHannot\Watchlist\Controller\WatchlistController::XHR_WATCHLIST_DOWNLOAD_ITEM_ACTION, ['id' => \StringUtil::binToUuid($item->uuid)]);
+        $objT->downloadLink  = $basePath . '&file=' . $objFile->path;
         $objT->downloadTitle = $GLOBALS['TL_LANG']['WATCHLIST']['download'];
         $objT->noDownload    = $GLOBALS['TL_LANG']['WATCHLIST']['noDownload'];
 

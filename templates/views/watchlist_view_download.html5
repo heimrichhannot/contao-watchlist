@@ -10,8 +10,7 @@
     <?php endif; ?>
     <?php if ($this->download) : ?>
         <div>
-            <button class="watchlist-download-item-button" id="watchlist-download-item-<?= $this->id ?>" data-id="<?= $this->id; ?>" data-watchlist-download-item-action="<?php echo $this->href; ?>" title="<?php echo $this->title; ?>"><?php echo $this->link; ?>
-            </button>
+            <a href="<?= $this->href ?>"><?= $this->link ?></a>
         </div>
         <div><span class="size"><?php echo $this->filesize; ?></span></div>
     <?php else: ?>

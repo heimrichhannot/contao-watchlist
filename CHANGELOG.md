@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.5] - 2017-11-28
+
+### Fixed
+- fixed download functions 
+
 ## [2.0.4] - 2017-11-27
 
 ### Fixed

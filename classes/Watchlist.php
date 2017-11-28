@@ -12,6 +12,8 @@ namespace HeimrichHannot\Watchlist;
 use Contao\ModuleModel;
 use Contao\Session;
 use HeimrichHannot\Ajax\AjaxAction;
+use HeimrichHannot\Haste\Util\Url;
+use HeimrichHannot\Request\Request;
 
 class Watchlist
 {
@@ -25,7 +27,6 @@ class Watchlist
     const XHR_WATCHLIST_UPDATE_MODAL_ACTION        = 'watchlistUpdateModalAction';
     const XHR_WATCHLIST_DOWNLOAD_ALL_ACTION        = 'watchlistDownloadAllAction';
     const XHR_WATCHLIST_DOWNLOAD_LINK_ACTION       = 'watchlistDownloadLinkAction';
-    const XHR_WATCHLIST_DOWNLOAD_ITEM_ACTION       = 'watchlistDownloadItemAction';
     const XHR_WATCHLIST_MULTIPLE_ADD_ACTION        = 'watchlistMultipleAddAction';
     const XHR_WATCHLIST_MULTIPLE_SELECT_ADD_ACTION = 'watchlistMultipleSelectAddAction';
 
@@ -448,7 +449,16 @@ class Watchlist
      */
     protected static function parseItem(WatchlistItemModel $item, $module)
     {
-        $isImage = false;
+        /** @var $objPage \Contao\PageModel */
+        global $objPage;
+
+        $isImage  = false;
+        $basePath = $objPage->getFrontendUrl();
+
+
+        if (\Input::get('auto_item')) {
+            $basePath .= '/' . \Input::get('auto_item');
+        }
 
         $objFileModel = \FilesModel::findById($item->uuid);
 
@@ -456,7 +466,7 @@ class Watchlist
             return ['isImage' => $isImage, 'item' => ''];
         }
 
-        $objFile = new \File($objFileModel->path, true);
+        $objFile = new \Contao\File($objFileModel->path, true);
 
         $objContent = \ContentModel::findByPk($item->cid);
 
@@ -501,9 +511,8 @@ class Watchlist
         }
 
         $objT->link      = ($objItemTitle = $item->title) ? $objItemTitle : $linkTitle;
-        $objT->title     = specialchars($objContent->titleText ?: $linkTitle);
         $objT->download  = $item->type == WatchlistItemModel::WATCHLIST_ITEM_TYPE_DOWNLOAD ? true : false;
-        $objT->href      = \HeimrichHannot\Ajax\AjaxAction::generateUrl(\HeimrichHannot\Watchlist\Controller\WatchlistController::XHR_GROUP, \HeimrichHannot\Watchlist\Controller\WatchlistController::XHR_WATCHLIST_DOWNLOAD_ITEM_ACTION, ['id' => \StringUtil::binToUuid($item->uuid)]);
+        $objT->href      = $basePath . '?file=' . $objFile->path;
         $objT->filesize  = \System::getReadableSize($objFile->filesize, 1);
         $objT->mime      = $objFile->mime;
         $objT->extension = $objFile->extension;

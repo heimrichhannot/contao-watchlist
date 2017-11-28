@@ -40,6 +40,10 @@ class ModuleWatchlist extends \Module
             }
         }
 
+        if (\Input::get('file')) {
+            \Contao\Controller::sendFileToBrowser(\Input::get('file'));
+        }
+
         $GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js|static';
 
         return parent::generate();

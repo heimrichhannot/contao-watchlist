@@ -17,6 +17,7 @@ use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Ajax\Response\ResponseData;
 use HeimrichHannot\Ajax\Response\ResponseSuccess;
 use HeimrichHannot\Haste\Util\StringUtil;
+use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\Watchlist\Watchlist;
 use HeimrichHannot\Watchlist\WatchlistItemModel;
 use HeimrichHannot\Watchlist\WatchlistItemView;
@@ -159,14 +160,18 @@ class WatchlistController
      */
     public static function downloadAll(WatchlistModel $watchlistModel)
     {
+        /** @var $objPage \Contao\PageModel */
+        global $objPage;
+
         $objItems = WatchlistItemModel::findBy('pid', $watchlistModel->id);
 
         if ($objItems == null) {
             return false;
         }
 
-        $path    = 'files/tmp/';
-        $strFile = 'download_' . $watchlistModel->hash . '.zip';
+        $basePath = $objPage->getFrontendUrl();
+        $path     = 'files/tmp/';
+        $strFile  = 'download_' . $watchlistModel->hash . '.zip';
 
         $objZip = new \ZipWriter($path . $strFile);
 
@@ -184,7 +189,7 @@ class WatchlistController
         // Open the "save as …" dialogue
         $objFile = new \File($path . $strFile, true);
 
-        return $path . $strFile;
+        return $basePath . '?file=' . $path . $strFile;
     }
 
     /**
@@ -206,24 +211,5 @@ class WatchlistController
         $objZip->addFile($objFile->path, $objFile->name);
 
         return $objZip;
-    }
-
-    /**
-     * @param $uuid
-     *
-     * @return string|boolean
-     */
-    public static function downloadItem($uuid)
-    {
-        $objFileModel = \FilesModel::findById($uuid);
-
-        if ($objFileModel === null) {
-            return false;
-        }
-
-        // Open the "save as …" dialogue
-        $objFile = new \Contao\File($objFileModel->path, true);
-
-        return $objFileModel->path;
     }
 }

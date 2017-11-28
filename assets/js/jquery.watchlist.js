@@ -11,7 +11,6 @@
             this.registerDownloadAll();
             this.registerDownloadLink();
             this.registerMultipleSelectAdd();
-            this.registerDownloadItem();
             this.registerSlick();
         },
         registerMultipleAdd: function() {
@@ -145,10 +144,8 @@
                     url: $('.watchlist-download-all-button').data('watchlistDownloadAllAction'),
                     success: function(data, textStatus, jqXHR) {
                         if (data.result.html !== false) {
-                            // window.open(data.result.html);
                             var link = document.createElement('a');
                             link.href = data.result.html;
-                            link.download = data.result.html.substr(data.result.html.lastIndexOf('/') + 1);
                             link.click();
                         }
                     }
@@ -165,20 +162,6 @@
                             $('.watchlist-download-link-href').html(data.result.html);
                             $('.watchlist-download-link-text').addClass('active');
                         }
-                    }
-                });
-            });
-        },
-        registerDownloadItem: function() {
-            $(document).on('click', '.watchlist-download-item-button', function() {
-                var btn = $(this);
-                $.ajax({
-                    url: $('#watchlist-download-item-' + btn.data('id')).data('watchlistDownloadItemAction'),
-                    success: function(data, textStatus, jqXHR) {
-                        var link = document.createElement('a');
-                        link.href = data.result.html;
-                        link.download = data.result.html.substr(data.result.html.lastIndexOf('/') + 1);
-                        link.click();
                     }
                 });
             });
