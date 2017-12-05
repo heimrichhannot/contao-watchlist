@@ -180,11 +180,9 @@ class Watchlist
     }
 
     /**
-     * @param null $downloadLink
-     *
      * @return string
      */
-    public static function getGlobalActions($downloadLink = null)
+    public static function getGlobalActions()
     {
         $objT = new \FrontendTemplate('watchlist_global_actions');
 
@@ -197,11 +195,22 @@ class Watchlist
         $objT->downloadAllLink  = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllLink'];
         $objT->downloadAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllTitle'];
         $objT->useDownloadLink  = false;
-        if ($downloadLink !== null) {
-            $objT->useDownloadLink   = true;
-            $objT->downloadLinkHref  = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_DOWNLOAD_LINK_ACTION, ['id' => $downloadLink]);
-            $objT->downloadLinkTitle = $GLOBALS['TL_LANG']['WATCHLIST']['downloadLinkTitle'];
-        }
+
+        return $objT->parse();
+    }
+
+    /**
+     * @param integer $downloadLink
+     *
+     * @return string
+     */
+    public static function getDownloadLinkAction($downloadLink)
+    {
+        $objT = new \FrontendTemplate('watchlist_downloadLink_action');
+
+        $objT->useDownloadLink   = true;
+        $objT->downloadLinkHref  = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_DOWNLOAD_LINK_ACTION, ['id' => $downloadLink]);
+        $objT->downloadLinkTitle = $GLOBALS['TL_LANG']['WATCHLIST']['downloadLinkTitle'];
 
         return $objT->parse();
     }
@@ -254,7 +263,7 @@ class Watchlist
 
             return $objT->parse();
         }
-
+        $objT->actions   = Watchlist::getGlobalActions();
         $objT->watchlist = static::getWatchlist($watchlist, $moduleId, false);
 
         return $objT->parse();

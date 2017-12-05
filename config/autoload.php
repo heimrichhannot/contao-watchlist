@@ -48,6 +48,7 @@ TemplateLoader::addFiles([
     'watchlist_multiple_add_action' => 'system/modules/watchlist/templates/actions',
     'watchlist_multiple'            => 'system/modules/watchlist/templates/watchlist',
     'watchlist_select_actions'      => 'system/modules/watchlist/templates/actions',
+    'watchlist_downloadLink_action' => 'system/modules/watchlist/templates/actions',
     'watchlist_download_list_item'  => 'system/modules/watchlist/templates/items',
     'mod_watchlist_download_list'   => 'system/modules/watchlist/templates/modules',
 ]);

@@ -12,11 +12,11 @@
             </div>
             <div class="modal-body">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li class="active"><a data-toggle="tab" href="#menu1-<?= $this->id ?>"><?= $this->newWatchlist ?></a></li>
-                    <li><a data-toggle="tab" href="#menu2-<?= $this->id ?>"><?= $this->selectWatchlist ?></a></li>
+                    <li class="active"><a data-toggle="tab" href="#menu2-<?= $this->id ?>"><?= $this->selectWatchlist ?></a></li>
+                    <li><a data-toggle="tab" href="#menu1-<?= $this->id ?>"><?= $this->newWatchlist ?></a></li>
                 </ul>
                 <div class="tab-content">
-                    <div id="menu1-<?= $this->id ?>" class="tab-pane fade in active">
+                    <div id="menu1-<?= $this->id ?>" class="tab-pane fade">
                         <div class="form-group">
                             <label for="watchlist-input-<?= $this->id ?>"><?= $this->newWatchlist ?>: </label>
                             <input class="form-control" id="watchlist-input-<?= $this->id ?>">
@@ -38,7 +38,7 @@
                                 <span><?= $this->addLink; ?></span></button>
                         </div>
                     </div>
-                    <div id="menu2-<?= $this->id ?>" class="tab-pane fade">
+                    <div id="menu2-<?= $this->id ?>" class="tab-pane fade in active">
                         <div class="watchlist-select-action-<?= $this->id ?>">
                             <?= $this->select ?>
                         </div>

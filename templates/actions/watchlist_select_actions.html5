@@ -1,7 +1,6 @@
 <div class="form-group" id="watchlist-select-input-<?= $this->id ?>" data-watchlist-update-modal-action="<?= $this->href ?>">
     <label for="watchlist-select-input-<?= $this->id ?>"><?php echo $this->selectWatchlist ?>: </label>
     <select id="watchlist-select-input-<?= $this->id ?>">
-        <option value="0"> -</option>
         <?php foreach ($this->select as $key => $value): ?>
             <option value="<?= $key ?>"> <?= $value ?></option>
         <?php endforeach; ?>

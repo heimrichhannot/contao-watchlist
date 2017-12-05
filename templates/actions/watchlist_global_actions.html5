@@ -1,16 +1,8 @@
-<div class="watchlist-global-actions">
-    <div class="watchlist-delete-download-action">
-        <div class="first watchlist-delete-all">
-            <button data-watchlist-delete-all-action="<?php echo $this->delAllHref; ?>" data-notify="#watchlist-notify" data-badge="#watchlist-badge" data-update="#watchlist .watchlist-body" data-action="watchlist-update" class="watchlist-delete-all-button btn btn-default" title="<?php echo $this->delAllTitle; ?>"><span><?php echo $this->delAllLink; ?></span></button>
-        </div>
-        <div class="last watchlist-download-all">
-            <button data-watchlist-download-all-action="<?php echo $this->downloadAllHref; ?>" class="watchlist-download-all-button btn btn-default" title="<?php echo $this->downloadAllTitle; ?>"><span><?php echo $this->downloadAllLink; ?></span></button>
-        </div>
+<div class="watchlist-delete-download-action">
+    <div class="watchlist-delete-all">
+        <button data-watchlist-delete-all-action="<?php echo $this->delAllHref; ?>" data-notify="#watchlist-notify" data-badge="#watchlist-badge" data-update="#watchlist .watchlist-body" data-action="watchlist-update" class="watchlist-delete-all-button btn btn-default" title="<?php echo $this->delAllTitle; ?>"><span><?php echo $this->delAllLink; ?></span></button>
     </div>
-    <?php if ($this->useDownloadLink): ?>
-        <div class="watchlist-download-link">
-            <button data-watchlist-download-link-action="<?php echo $this->downloadLinkHref; ?>" class="watchlist-download-link-button btn btn-default" title="<?php echo $this->downloadLinkTitle; ?>"><span><?php echo $this->downloadLinkTitle; ?></span></button>
-            <div class="watchlist-download-link-text"><a class="watchlist-download-link-href">&nbsp;</a></div>
-        </div>
-    <?php endif; ?>
+    <div class="watchlist-download-all">
+        <button data-watchlist-download-all-action="<?php echo $this->downloadAllHref; ?>" class="watchlist-download-all-button btn btn-default" title="<?php echo $this->downloadAllTitle; ?>"><span><?php echo $this->downloadAllLink; ?></span></button>
+    </div>
 </div>

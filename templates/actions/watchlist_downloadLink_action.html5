@@ -1,0 +1,6 @@
+<div class="watchlist-download-link">
+    <div class="watchlist-download-link-button-action">
+        <button data-watchlist-download-link-action="<?php echo $this->downloadLinkHref; ?>" class="watchlist-download-link-button btn btn-default" title="<?php echo $this->downloadLinkTitle; ?>"><span><?php echo $this->downloadLinkTitle; ?></span></button>
+    </div>
+    <div class="watchlist-download-link-text"><a class="watchlist-download-link-href">&nbsp;</a></div>
+</div>

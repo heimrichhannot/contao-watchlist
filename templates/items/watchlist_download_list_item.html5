@@ -9,8 +9,10 @@
         </figure>
     <?php endif; ?>
     <div class="watchlist-download-list-item-title"><?= $this->title ?></div>
-    <?php if ($this->copright !== null): ?>
-        <div><?= $this->copyright ?></div>
+    <?php if ($this->copyright !== null && is_array($this->copyright)): ?>
+        <?php foreach ($this->copyright as $copyright): ?>
+            <div class="watchlist-list-item-copyright"><?= $copyright ?></div>
+        <?php endforeach; ?>
     <?php endif; ?>
     <?php if ($this->download): ?>
         <div><?= $this->filesize ?></div>

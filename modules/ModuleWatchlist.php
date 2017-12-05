@@ -68,9 +68,7 @@ class ModuleWatchlist extends \Module
             }
         }
         if ($this->useDownloadLink) {
-            $this->Template->actions = Watchlist::getGlobalActions($this->downloadLink);
-        } else {
-            $this->Template->actions = Watchlist::getGlobalActions();
+            $this->Template->downloadLinkAction = Watchlist::getDownloadLinkAction($this->downloadLink);
         }
         $this->Template->watchlistHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['headline'];
         $this->Template->close             = $GLOBALS['TL_LANG']['WATCHLIST']['closeLink'];

@@ -11,7 +11,6 @@
             this.registerDownloadAll();
             this.registerDownloadLink();
             this.registerMultipleSelectAdd();
-            this.registerSlick();
         },
         registerMultipleAdd: function() {
             $(document).on('click', '.watchlist-multiple-add', function() {
@@ -79,6 +78,10 @@
                 $('#watchlistModal-' + $(this).data('id')).modal('toggle');
                 Watchlist.updateModalSelect($(this).data('id'));
             });
+
+            $(document).on('click', '.watchlist-show-modal', function() {
+                $('#watchlistModal').modal('toggle');
+            });
         },
         registerDelete: function() {
             $(document).on('click', '.watchlist-delete-item', function() {
@@ -110,10 +113,11 @@
         watchlistUpdate: function() {
             $('.watchlist-loader').show();
             $.ajax({
-                url: $('.watchlist-toggle').data('watchlistUpdateAction'),
+                url: $('.watchlist-show-modal').data('watchlistUpdateAction'),
                 success: function(data, textStatus, jqXHR) {
                     $('.watchlist-body').replaceWith(data.result.html);
-                    Watchlist.initSlick();
+                    $('.watchlist-download-link-href').html('&nbsp;');
+                    $('.watchlist-download-link-text').removeClass('active');
                     $('.watchlist-loader').hide();
                 }
             });
@@ -124,8 +128,6 @@
                     url: $('#watchlist-selector').data('watchlistSelectAction') + '&id=' + $('#watchlist-selector').find(':selected').val(),
                     success: function(data, textStatus, jqXHR) {
                         Watchlist.watchlistUpdate();
-                        $('.watchlist-download-link-href').html('&nbsp;');
-                        $('.watchlist-download-link-text').removeClass('active');
                     }
                 });
             });
@@ -165,51 +167,6 @@
                     }
                 });
             });
-        },
-        registerSlick: function() {
-            $('#watchlist').on('shown.bs.collapse', function() {
-                if ($('.watchlist-list-item').length > 4) {
-                    $('.watchlist-item-image-list').slick('setPosition');
-                }
-            });
-            $(document).ready(function() {
-                Watchlist.initSlick();
-            });
-        },
-        initSlick: function() {
-            if ($('.watchlist-list-item').length > 4) {
-                $('.watchlist-item-image-list').slick({
-                    infinite: true,
-                    dots: true,
-                    slidesToShow: 4,
-                    slidesToScroll: 4,
-                    responsive: [
-                        {
-                            breakpoint: 1024,
-                            settings: {
-                                slidesToShow: 3,
-                                slidesToScroll: 3,
-                                infinite: true,
-                                dots: true
-                            }
-                        },
-                        {
-                            breakpoint: 600,
-                            settings: {
-                                slidesToShow: 2,
-                                slidesToScroll: 2
-                            }
-                        },
-                        {
-                            breakpoint: 480,
-                            settings: {
-                                slidesToShow: 1,
-                                slidesToScroll: 1
-                            }
-                        }
-                    ]
-                });
-            }
         }
     };
 

@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.6] - 2017-12-05
+
+### Changed
+- changed drop down to modal. removed slider
+
 ## [2.0.5] - 2017-11-28
 
 ### Fixed
