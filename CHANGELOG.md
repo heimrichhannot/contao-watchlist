@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+
+## [2.0.7] - 2017-12-05
+
+### fixed
+- hide link button if watchlist is empty. show global actions if watchlist is empty
+
 ## [2.0.6] - 2017-12-05
 
 ### Changed

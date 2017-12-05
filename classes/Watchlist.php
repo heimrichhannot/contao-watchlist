@@ -258,12 +258,12 @@ class Watchlist
         $objT->selected = Session::getInstance()->get(static::WATCHLIST_SELECT);
         $items          = WatchlistItemModel::findBy('pid', $watchlist->id);
 
+        $objT->actions = Watchlist::getGlobalActions();
         if ($items == null || $items->count() <= 0) {
             $objT->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
 
             return $objT->parse();
         }
-        $objT->actions   = Watchlist::getGlobalActions();
         $objT->watchlist = static::getWatchlist($watchlist, $moduleId, false);
 
         return $objT->parse();
@@ -299,7 +299,6 @@ class Watchlist
         $objT->pids  = array_keys($preparedWatchlistItems['arrParents']);
         $objT->items = $preparedWatchlistItems['arrItems'];
         $objT->css   = $preparedWatchlistItems['isImage'] = true ? 'watchlist-item-image-list' : '';
-        $objT->css   .= $items->count() > 4 ? ' watchlist-item-list-slick' : '';
 
         return $objT->parse();
     }

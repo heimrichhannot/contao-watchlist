@@ -57,17 +57,14 @@ class ModuleWatchlist extends \Module
             /* @var $watchlist WatchlistModel */
             $watchlist                 = WatchlistModel::getMultipleWatchlistModel();
             $this->Template->watchlist = Watchlist::getMultipleWatchlist($watchlist, $this->id);
-            if ($watchlist !== null) {
-                $count = $watchlist->countItems();
-            }
         } else {
             $watchlist                 = WatchlistModel::getWatchlistModel();
             $this->Template->watchlist = Watchlist::getWatchlist($watchlist, $this->id);
-            if ($watchlist !== null) {
-                $count = $watchlist->current()->countItems();
-            }
         }
-        if ($this->useDownloadLink) {
+        if ($watchlist !== null) {
+            $count = $watchlist->countItems();
+        }
+        if ($this->useDownloadLink && $count > 0) {
             $this->Template->downloadLinkAction = Watchlist::getDownloadLinkAction($this->downloadLink);
         }
         $this->Template->watchlistHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['headline'];
