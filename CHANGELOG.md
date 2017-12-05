@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.9] - 2017-12-05
+
+### fixed
+- updated autoload 
+
 ## [2.0.8] - 2017-12-05
 
 ### changed
