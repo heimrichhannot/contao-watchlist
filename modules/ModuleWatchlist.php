@@ -51,27 +51,28 @@ class ModuleWatchlist extends \Module
 
     protected function compile()
     {
+        $watchlist                 = new Watchlist();
         $count                     = 0;
         $this->Template->watchlist = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
         if ($this->useMultipleWatchlist) {
             /* @var $watchlist WatchlistModel */
-            $watchlist                 = WatchlistModel::getMultipleWatchlistModel();
-            $this->Template->watchlist = Watchlist::getMultipleWatchlist($watchlist, $this->id);
+            $watchlistModel            = WatchlistModel::getMultipleWatchlistModel();
+            $this->Template->watchlist = $watchlist->getMultipleWatchlist($watchlistModel, $this->id);
         } else {
-            $watchlist                 = WatchlistModel::getWatchlistModel();
-            $this->Template->watchlist = Watchlist::getWatchlist($watchlist, $this->id);
+            $watchlistModel            = WatchlistModel::getWatchlistModel();
+            $this->Template->watchlist = $watchlist->getWatchlist($watchlistModel, $this->id);
         }
-        if ($watchlist !== null) {
-            $count = $watchlist->countItems();
+        if ($watchlistModel !== null) {
+            $count = $watchlistModel->countItems();
         }
-        if ($this->useDownloadLink && $count > 0) {
-            $this->Template->downloadLinkAction = Watchlist::getDownloadLinkAction($this->downloadLink);
+        if ($this->useDownloadLink) {
+            $this->Template->downloadLinkAction = $watchlist->getDownloadLinkAction($this->downloadLink);
         }
         $this->Template->watchlistHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['headline'];
         $this->Template->close             = $GLOBALS['TL_LANG']['WATCHLIST']['closeLink'];
         $this->Template->count             = $count;
         $this->Template->cssClass          = $count > 0 ? 'not-empty' : 'empty';
         $this->Template->toggleLink        = $GLOBALS['TL_LANG']['WATCHLIST']['toggleLink'];
-        $this->Template->updateHref        = AjaxAction::generateUrl(WatchlistController::XHR_GROUP, WatchlistController::XHR_WATCHLIST_UPDATE_ACTION, ['id' => $this->id]);
+        $this->Template->updateHref        = AjaxAction::generateUrl(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_UPDATE_ACTION, ['id' => $this->id]);
     }
 }

@@ -49,7 +49,7 @@ class Watchlist
      *
      * @return string
      */
-    public static function getSelectAction($id, $groups = false)
+    public function getSelectAction($id, $groups = false)
     {
         $select = WatchlistModel::getAllWatchlistsByCurrentUser(true, $groups);
 
@@ -69,7 +69,7 @@ class Watchlist
      *
      * @return string
      */
-    public static function getAddAction($arrData, $id, $multiple = false)
+    public function getAddAction($arrData, $id, $multiple = false)
     {
         global $objPage;
 
@@ -88,9 +88,9 @@ class Watchlist
         $strUuid = \StringUtil::binToUuid($objFile->uuid);
 
         if ($multiple) {
-            return static::getMultipleWatchlistAddAction($strUuid, $arrData, $objPage);
+            return $this->getMultipleWatchlistAddAction($strUuid, $arrData, $objPage);
         } else {
-            return static::getSingleWatchlistAddAction($strUuid, $arrData, $objPage);
+            return $this->getSingleWatchlistAddAction($strUuid, $arrData, $objPage);
         }
     }
 
@@ -101,7 +101,7 @@ class Watchlist
      *
      * @return string
      */
-    protected static function getSingleWatchlistAddAction($strUuid, array $arrData, $objPage)
+    protected function getSingleWatchlistAddAction($strUuid, array $arrData, $objPage)
     {
         $added     = false;
         $watchlist = WatchlistModel::getWatchlistModel();
@@ -133,7 +133,7 @@ class Watchlist
      *
      * @return string
      */
-    protected static function getMultipleWatchlistAddAction($strUuid, array $arrData, $objPage)
+    protected function getMultipleWatchlistAddAction($strUuid, array $arrData, $objPage)
     {
         $objT = new \FrontendTemplate('watchlist_multiple_add_action');
 
@@ -152,7 +152,7 @@ class Watchlist
         $objT->active          = true;
         $objT->abort           = $GLOBALS['TL_LANG']['WATCHLIST']['abort'];
         $objT->id              = $strUuid;
-        $objT->select          = static::getSelectAction($strUuid);
+        $objT->select          = $this->getSelectAction($strUuid);
 
         return $objT->parse();
     }
@@ -162,7 +162,7 @@ class Watchlist
      *
      * @return string
      */
-    public static function getEditActions(WatchlistItemModel $objItem)
+    public function getEditActions(WatchlistItemModel $objItem)
     {
         $objPage = \PageModel::findByPk($objItem->pageID);
 
@@ -182,7 +182,7 @@ class Watchlist
     /**
      * @return string
      */
-    public static function getGlobalActions()
+    public function getGlobalActions()
     {
         $objT = new \FrontendTemplate('watchlist_global_actions');
 
@@ -204,7 +204,7 @@ class Watchlist
      *
      * @return string
      */
-    public static function getDownloadLinkAction($downloadLink)
+    public function getDownloadLinkAction($downloadLink)
     {
         $objT = new \FrontendTemplate('watchlist_downloadLink_action');
 
@@ -235,7 +235,7 @@ class Watchlist
      *
      * @return string
      */
-    public static function getMultipleWatchlist($watchlist, $moduleId)
+    public function getMultipleWatchlist($watchlist, $moduleId)
     {
         $objT = new \FrontendTemplate('watchlist_multiple');
 
@@ -264,7 +264,7 @@ class Watchlist
 
             return $objT->parse();
         }
-        $objT->watchlist = static::getWatchlist($watchlist, $moduleId, false);
+        $objT->watchlist = $this->getWatchlist($watchlist, $moduleId, false);
 
         return $objT->parse();
     }
@@ -276,7 +276,7 @@ class Watchlist
      *
      * @return string
      */
-    public static function getWatchlist($watchlist, $moduleId, $grouped = true)
+    public function getWatchlist($watchlist, $moduleId, $grouped = true)
     {
         $objT   = new \FrontendTemplate($grouped ? 'watchlist_grouped' : 'watchlist');
         $module = ModuleModel::findById($moduleId);
@@ -294,7 +294,7 @@ class Watchlist
             return $objT->parse();
         }
 
-        $preparedWatchlistItems = static::prepareWatchlistItems($items, $module, $grouped);
+        $preparedWatchlistItems = $this->prepareWatchlistItems($items, $module, $grouped);
 
         $objT->pids  = array_keys($preparedWatchlistItems['arrParents']);
         $objT->items = $preparedWatchlistItems['arrItems'];
@@ -309,7 +309,7 @@ class Watchlist
      *
      * @return array
      */
-    protected static function getParentList($objPage, $module)
+    protected function getParentList($objPage, $module)
     {
         $type   = null;
         $pageId = $objPage->id;
@@ -408,7 +408,7 @@ class Watchlist
      *
      * @return array
      */
-    public static function prepareWatchlistItems($items, $module, $grouped)
+    public function prepareWatchlistItems($items, $module, $grouped)
     {
         $arrItems   = [];
         $arrParents = [];
@@ -424,13 +424,13 @@ class Watchlist
             if (!isset($arrParents[$item->pageID])) {
 
                 $objParentT                = new \FrontendTemplate('watchlist_parents');
-                $objParentT->items         = static::getParentList(\PageModel::findByPk($item->pageID), $module);
+                $objParentT->items         = $this->getParentList(\PageModel::findByPk($item->pageID), $module);
                 $arrParents[$item->pageID] = $objParentT->parse();
             }
 
             $objItemT           = new \FrontendTemplate('watchlist_item');
             $objItemT->cssClass = $cssClass;
-            $result             = static::parseItem($item, $module);
+            $result             = $this->parseItem($item, $module);
             $objItemT->item     = $result['item'];
             $isImage            = $result['isImage'];
             $objItemT->id       = \Contao\StringUtil::binToUuid($item->uuid);
@@ -455,7 +455,7 @@ class Watchlist
      *
      * @return array
      */
-    protected static function parseItem(WatchlistItemModel $item, $module)
+    protected function parseItem(WatchlistItemModel $item, $module)
     {
         /** @var $objPage \Contao\PageModel */
         global $objPage;
@@ -525,9 +525,9 @@ class Watchlist
         $objT->mime      = $objFile->mime;
         $objT->extension = $objFile->extension;
         $objT->path      = $objFile->dirname;
-        $objT->id        = \StringUtil::binToUuid($item->uuid);
+        $objT->id        = \Contao\StringUtil::binToUuid($item->uuid);
 
-        $objT->actions = Watchlist::getEditActions($item);
+        $objT->actions = $this->getEditActions($item);
 
         return ['item' => $objT->parse(), 'isImage' => $isImage];
     }

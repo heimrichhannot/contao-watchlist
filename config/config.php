@@ -1,23 +1,5 @@
 <?php
 
-// session keys
-define('WATCHLIST_SESSION', 'WATCHLIST');
-define('WATCHLIST_SESSION_FE', 'WATCHLIST_SESSION_FE');
-define('WATCHLIST_SESSION_BE', 'WATCHLIST_SESSION_BE');
-
-// actions
-define('WATCHLIST_ACT_DELETE', 'delete');
-define('WATCHLIST_ACT_DELETE_ALL', 'deleteAll');
-define('WATCHLIST_ACT_DOWNLOAD_ALL', 'downloadAll');
-define('WATCHLIST_ACT_ADD', 'add');
-
-
-// notifications
-define('WATCHLIST_NOTIFICATION_UPDATE_ITEM', 'UPDATE_ITEM');
-define('WATCHLIST_NOTIFICATION_ADD_ITEM', 'ADD_ITEM');
-define('WATCHLIST_NOTIFICATION_DELETE_ITEM', 'DELETE_ITEM');
-define('WATCHLIST_NOTIFICATION_DELETE_ALL', 'DELETE_ALL');
-
 /**
  * Models
  */
@@ -27,7 +9,7 @@ $GLOBALS['TL_MODELS']['tl_watchlist_item'] = 'HeimrichHannot\Watchlist\Watchlist
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['getPageLayout'][] = ['HeimrichHannot\Watchlist\Controller\FrontendController', 'xhrAction'];
+$GLOBALS['TL_HOOKS']['getPageLayout'][] = ['HeimrichHannot\Watchlist\Controller\AjaxController', 'xhrAction'];
 
 /**
  * Front end modules

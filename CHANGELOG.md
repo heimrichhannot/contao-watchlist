@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.8] - 2017-12-05
+
+### changed
+- changed static function calls
 
 ## [2.0.7] - 2017-12-05
 

@@ -11,11 +11,9 @@ use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\Response\ResponseData;
 use HeimrichHannot\Ajax\Response\ResponseSuccess;
 use HeimrichHannot\Watchlist\Watchlist;
-use HeimrichHannot\Watchlist\WatchlistItemEnclosure;
-use HeimrichHannot\Watchlist\WatchlistItemModel;
 use HeimrichHannot\Watchlist\WatchlistModel;
 
-class FrontendController extends Controller
+class AjaxController extends Controller
 {
     public function xhrAction()
     {
@@ -39,25 +37,27 @@ class FrontendController extends Controller
         return $objResponse;
     }
 
-    public function watchlistMultipleAddAction($id, $cid, $type, $pageID, $title, $watchlist, $durability)
+    public function watchlistMultipleAddAction($id, $cid, $type, $pageID, $title, $name, $durability)
     {
         $objResponse = new ResponseSuccess();
         $objResponse->setResult(new ResponseData(false));
-        if (!$watchlist) {
+        if (!$name) {
             return $objResponse;
         }
-        $watchlistModel = WatchlistModel::findBy('name', $watchlist);
+        $watchlistModel = WatchlistModel::findBy('name', $name);
+        $watchlist      = new Watchlist();
 
         if ($watchlistModel !== null) {
-            $notification = Watchlist::getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_watchlist_exists_error'], $watchlist), Watchlist::NOTIFY_STATUS_ERROR);
+            $notification = $watchlist->getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_watchlist_exists_error'], $watchlist), Watchlist::NOTIFY_STATUS_ERROR);
             $objResponse->setResult(new ResponseData(['id' => $id, 'notification' => $notification]));
 
             return $objResponse;
         }
 
-        $watchlistModel = WatchlistController::addMultipleWatchlist($watchlist, $durability);
+        $watchlistController = new WatchlistController();
+        $watchlistModel      = $watchlistController->addMultipleWatchlist($name, $durability);
         if ($watchlistModel === null) {
-            $notification = Watchlist::getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_watchlist_error'], $watchlist), Watchlist::NOTIFY_STATUS_ERROR);
+            $notification = $watchlist->getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_watchlist_error'], $watchlist), Watchlist::NOTIFY_STATUS_ERROR);
             $objResponse->setResult(new ResponseData(['id' => $id, 'notification' => $notification]));
 
             return $objResponse;
@@ -113,8 +113,8 @@ class FrontendController extends Controller
 
             return $objResponse;
         }
-
-        $notification = WatchlistController::addWatchlistItem($id, $watchlistModel, $cid, $type, $pageID, $title);
+        $watchlistController = new WatchlistController();
+        $notification        = $watchlistController->addWatchlistItem($id, $watchlistModel, $cid, $type, $pageID, $title);
         $objResponse->setResult(new ResponseData(['id' => $id, 'notification' => $notification]));
 
         return $objResponse;
@@ -122,8 +122,9 @@ class FrontendController extends Controller
 
     public function watchlistDeleteAction($id)
     {
-        $notification = WatchlistController::deleteWatchlistItem($id);
-        $objResponse  = new ResponseSuccess();
+        $watchlistController = new WatchlistController();
+        $notification        = $watchlistController->deleteWatchlistItem($id);
+        $objResponse         = new ResponseSuccess();
         $objResponse->setResult(new ResponseData(['id' => $id, 'notification' => $notification]));
 
         return $objResponse;
@@ -131,15 +132,16 @@ class FrontendController extends Controller
 
     public function watchlistDeleteAllAction()
     {
-        $objResponse = new ResponseSuccess();
-        $objResponse->setResult(new ResponseData(['notification' => WatchlistController::deleteWatchlist()]));
+        $watchlistController = new WatchlistController();
+        $objResponse         = new ResponseSuccess();
+        $objResponse->setResult(new ResponseData(['notification' => $watchlistController->deleteWatchlist()]));
 
         return $objResponse;
     }
 
     public function watchlistSelectAction($id)
     {
-        Session::getInstance()->set(WatchlistController::WATCHLIST_SELECT, $id);
+        Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, $id);
         $objResponse = new ResponseSuccess();
         $objResponse->setResult(new ResponseData($id));
 
@@ -148,15 +150,17 @@ class FrontendController extends Controller
 
     public function watchlistUpdateModalAction($id)
     {
+        $watchlist   = new Watchlist();
         $objResponse = new ResponseSuccess();
-        $objResponse->setResult(new ResponseData(Watchlist::getSelectAction($id)));
+        $objResponse->setResult(new ResponseData($watchlist->getSelectAction($id)));
 
         return $objResponse;
     }
 
     public function watchlistDownloadAllAction($id)
     {
-        $objResponse = new ResponseSuccess();
+        $watchlistController = new WatchlistController();
+        $objResponse         = new ResponseSuccess();
         $objResponse->setResult(new ResponseData(false));
         if ($id === '0') {
             $id = Session::getInstance()->get(Watchlist::WATCHLIST_SELECT);
@@ -165,7 +169,7 @@ class FrontendController extends Controller
         if ($watchlistModel === null) {
             return $objResponse;
         }
-        $objResponse->setResult(new ResponseData(WatchlistController::downloadAll($watchlistModel)));
+        $objResponse->setResult(new ResponseData($watchlistController->downloadAll($watchlistModel)));
 
         return $objResponse;
     }
@@ -204,12 +208,13 @@ class FrontendController extends Controller
             return '';
         }
 
+        $watchlist = new Watchlist();
         if ($module->useMultipleWatchlist) {
-            $watchlist         = WatchlistModel::getMultipleWatchlistModel();
-            $watchlistTemplate = Watchlist::getMultipleWatchlist($watchlist, $moduleId);
+            $watchlistModel    = WatchlistModel::getMultipleWatchlistModel();
+            $watchlistTemplate = $watchlist->getMultipleWatchlist($watchlistModel, $moduleId);
         } else {
-            $watchlist         = WatchlistModel::getWatchlistModel();
-            $watchlistTemplate = Watchlist::getWatchlist($watchlist, $moduleId);
+            $watchlistModel    = WatchlistModel::getWatchlistModel();
+            $watchlistTemplate = $watchlist->getWatchlist($watchlistModel, $moduleId);
         }
 
         return $watchlistTemplate;

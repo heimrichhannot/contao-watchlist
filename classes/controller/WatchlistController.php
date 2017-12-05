@@ -13,40 +13,12 @@ namespace HeimrichHannot\Watchlist\Controller;
 
 
 use Contao\Session;
-use HeimrichHannot\Ajax\AjaxAction;
-use HeimrichHannot\Ajax\Response\ResponseData;
-use HeimrichHannot\Ajax\Response\ResponseSuccess;
-use HeimrichHannot\Haste\Util\StringUtil;
-use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\Watchlist\Watchlist;
 use HeimrichHannot\Watchlist\WatchlistItemModel;
-use HeimrichHannot\Watchlist\WatchlistItemView;
 use HeimrichHannot\Watchlist\WatchlistModel;
 
 class WatchlistController
 {
-    const XHR_GROUP = 'wl';
-
-    const XHR_WATCHLIST_ADD_ACTION           = 'watchlistAddAction';
-    const XHR_WATCHLIST_DELETE_ACTION        = 'watchlistDeleteAction';
-    const XHR_WATCHLIST_DELETE_ALL_ACTION    = 'watchlistDeleteAllAction';
-    const XHR_WATCHLIST_UPDATE_ACTION        = 'watchlistUpdateAction';
-    const XHR_WATCHLIST_SELECT_ACTION        = 'watchlistSelectAction';
-    const XHR_WATCHLIST_UPDATE_MODAL_ACTION  = 'watchlistUpdateModalAction';
-    const XHR_WATCHLIST_DOWNLOAD_ALL_ACTION  = 'watchlistDownloadAllAction';
-    const XHR_WATCHLIST_DOWNLOAD_LINK_ACTION = 'watchlistDownloadLinkAction';
-    const XHR_WATCHLIST_DOWNLOAD_ITEM_ACTION = 'watchlistDownloadItemAction';
-
-    const XHR_PARAMETER_WATCHLIST_ITEM_ID    = 'id';
-    const XHR_PARAMETER_WATCHLIST_ITEM_TITLE = 'title';
-    const XHR_PARAMETER_WATCHLIST_ITEM_CID   = 'cid';
-    const XHR_PARAMETER_WATCHLIST_ITEM_PAGE  = 'pageID';
-    const XHR_PARAMETER_WATCHLIST_ITEM_TYPE  = 'type';
-    const XHR_PARAMETER_WATCHLIST_NAME       = 'watchlist';
-    const XHR_PARAMETER_WATCHLIST_DURABILITY = 'durability';
-
-    const WATCHLIST_SELECT = 'watchlist_select';
-
     /**
      * @var int for tracking iterations
      */
@@ -56,11 +28,6 @@ class WatchlistController
      * @var WatchlistModel|null
      */
     protected $objModel = null;
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * @param $uuid
@@ -73,7 +40,7 @@ class WatchlistController
      * @return string
      * @throws \Exception
      */
-    public static function addWatchlistItem($uuid, $watchlistModel, $cid, $type, $pageID, $title)
+    public function addWatchlistItem($uuid, $watchlistModel, $cid, $type, $pageID, $title)
     {
         // Throw an exception if there's no id:
         if (!\Validator::isStringUuid($uuid)) {
@@ -105,7 +72,7 @@ class WatchlistController
      *
      * @return mixed
      */
-    public static function addMultipleWatchlist($name, $durability)
+    public function addMultipleWatchlist($name, $durability)
     {
         if (FE_USER_LOGGED_IN === true) {
             $watchlist = WatchlistModel::createWatchlist($name, \FrontendUser::getInstance()->id, $durability);
@@ -121,7 +88,7 @@ class WatchlistController
      *
      * @return string
      */
-    public static function deleteWatchlistItem($id)
+    public function deleteWatchlistItem($id)
     {
         $watchlistItemModel = WatchlistItemModel::findByUuid($id);
         if ($watchlistItemModel === null) {
@@ -135,20 +102,20 @@ class WatchlistController
     /**
      * @return string
      */
-    public static function deleteWatchlist()
+    public function deleteWatchlist()
     {
-        $id     = Session::getInstance()->get(WatchlistController::WATCHLIST_SELECT);
+        $id     = Session::getInstance()->get(Watchlist::WATCHLIST_SELECT);
         $result = WatchlistModel::deleteWatchlistById($id);
         if ($result == 0) {
             return Watchlist::getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_all_error']), Watchlist::NOTIFY_STATUS_ERROR);
         }
         $watchlist = WatchlistModel::findOneBy(['pid=?', 'published=?'], [\FrontendUser::getInstance()->id, '1']);
         if ($watchlist === null) {
-            Session::getInstance()->set(WatchlistController::WATCHLIST_SELECT, null);
+            Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, null);
 
             return Watchlist::getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_all']), Watchlist::NOTIFY_STATUS_SUCCESS);
         }
-        Session::getInstance()->set(WatchlistController::WATCHLIST_SELECT, $watchlist->id);
+        Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, $watchlist->id);
 
         return Watchlist::getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_delete_all']), Watchlist::NOTIFY_STATUS_SUCCESS);
     }
@@ -158,7 +125,7 @@ class WatchlistController
      *
      * @return string|boolean
      */
-    public static function downloadAll(WatchlistModel $watchlistModel)
+    public function downloadAll(WatchlistModel $watchlistModel)
     {
         /** @var $objPage \Contao\PageModel */
         global $objPage;
@@ -181,7 +148,7 @@ class WatchlistController
                 continue;
             }
 
-            $objZip = static::generateArchiveOutput($item, $objZip);
+            $objZip = $this->generateArchiveOutput($item, $objZip);
         }
 
         $objZip->close();
@@ -200,7 +167,7 @@ class WatchlistController
      *
      * @return \ZipWriter
      */
-    protected static function generateArchiveOutput(WatchlistItemModel $objItem, \ZipWriter $objZip)
+    protected function generateArchiveOutput(WatchlistItemModel $objItem, \ZipWriter $objZip)
     {
         $objFile = \FilesModel::findById($objItem->uuid);
 
