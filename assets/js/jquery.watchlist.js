@@ -115,7 +115,6 @@
             $.ajax({
                 url: $('.watchlist-show-modal').data('watchlistUpdateAction'),
                 success: function(data, textStatus, jqXHR) {
-                    console.log(data.result.html);
                     $('.watchlist-body').replaceWith(data.result.html);
                     $('.watchlist-download-link-href').html('&nbsp;');
                     $('.watchlist-download-link-text').removeClass('active');

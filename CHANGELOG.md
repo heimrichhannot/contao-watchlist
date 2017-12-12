@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.10] - 2017-12-12
+
+### fixed
+- removed console log
+
 ## [2.0.9] - 2017-12-05
 
 ### fixed
