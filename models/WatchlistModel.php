@@ -293,7 +293,11 @@ class WatchlistModel extends \Contao\Model
                 $watchlistModel = static::findOnePublishedByPid($user->id, 1);
             }
         } else {
-            $watchlistModel = static::findOneBy(['id=?', 'published=?'], [$watchlistId, '1']);
+            if ($module->useGroupWatchlist) {
+                $watchlistModel = static::findOneBy(['id=?', 'published=?'], [$watchlistId, '1']);
+            } else {
+                $watchlistModel = static::findOneBy(['id=?', 'published=?', 'pid=?'], [$watchlistId, '1', $user->id]);
+            }
         }
         if ($watchlistModel === null) {
 

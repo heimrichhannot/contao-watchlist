@@ -1,10 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.12] - 2017-12-12
+
+### fixed
+- if 'useGroupWatchlist' not select just select your own watchlists on multiple watchlists
+
 ## [2.0.11] - 2017-12-12
 
 ### fixed
-- get mulitple watchlist by current user group
+- get multiple watchlist by current user group
 
 ## [2.0.10] - 2017-12-12
 
