@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.11] - 2017-12-12
+
+### fixed
+- get mulitple watchlist by current user group
+
 ## [2.0.10] - 2017-12-12
 
 ### fixed
