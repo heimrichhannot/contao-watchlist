@@ -56,7 +56,7 @@ class ModuleWatchlist extends \Module
         $this->Template->watchlist = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
         if ($this->useMultipleWatchlist) {
             /* @var $watchlist WatchlistModel */
-            $watchlistModel            = WatchlistModel::getMultipleWatchlistModel();
+            $watchlistModel            = WatchlistModel::getMultipleWatchlistModel($this->id);
             $this->Template->watchlist = $watchlist->getMultipleWatchlist($watchlistModel, $this->id);
         } else {
             $watchlistModel            = WatchlistModel::getWatchlistModel();

@@ -176,6 +176,22 @@ class WatchlistModel extends \Contao\Model
     }
 
     /**
+     * returns an array of watchlist models where the members (pid) are in the same group as the given user group
+     *
+     * @return \Model|null
+     */
+    public static function getOneWatchlistByUserGroups($groups)
+    {
+        $watchlist = static::getAllWatchlistByUserGroups($groups);
+
+        if (empty($watchlist)) {
+            return null;
+        }
+
+        return $watchlist[0];
+    }
+
+    /**
      * Find published watchlist
      *
      * @param int   $intLimit
@@ -197,15 +213,13 @@ class WatchlistModel extends \Contao\Model
     }
 
     /**
-     * Find published watchlist by pid (user id)
-     *
-     * @param int   $pid
+     * @param       $pid
      * @param int   $intLimit
      * @param array $arrOptions
      *
-     * @return \Model\Collection|null|static
+     * @return static
      */
-    public static function findPublishedByPid($pid, $intLimit = 0, array $arrOptions = [])
+    public static function findOnePublishedByPid($pid, $intLimit = 0, array $arrOptions = [])
     {
         $t            = static::$strTable;
         $arrColumns   = ["$t.pid=?"];
@@ -216,7 +230,7 @@ class WatchlistModel extends \Contao\Model
             $arrOptions['limit'] = $intLimit;
         }
 
-        return static::findBy($arrColumns, $pid, $arrOptions);
+        return static::findOneBy($arrColumns, $pid, $arrOptions);
     }
 
     /**
@@ -265,40 +279,49 @@ class WatchlistModel extends \Contao\Model
     /**
      * @param $user
      *
-     * @return array|null
+     * @return \Model|null
      */
-    public static function getMultipleWatchlistModelByUser($user)
+    public static function getMultipleWatchlistModelByUser($user, int $moduleId)
     {
+        $module      = \Contao\ModuleModel::findById($moduleId);
         $watchlistId = Session::getInstance()->get(Watchlist::WATCHLIST_SELECT);
         if ($watchlistId == null) {
-            $watchlistModel = static::getAllWatchlistByCurrentUserGroups();
-            if (empty($watchlistModel)) {
-                $watchlistModel = static::findPublishedByPid($user->id, 1);
+
+            if ($module->useGroupWatchlist) {
+                $watchlistModel = static::getOneWatchlistByUserGroups($module->groupWatchlist);
             } else {
-                $watchlistModel = $watchlistModel[0];
+                $watchlistModel = static::findOnePublishedByPid($user->id, 1);
             }
-            Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, $watchlistModel->id);
         } else {
             $watchlistModel = static::findOneBy(['id=?', 'published=?'], [$watchlistId, '1']);
         }
         if ($watchlistModel === null) {
-            $watchlistModel = static::findPublishedByPid($user->id, 1);
-            if ($watchlistModel === null) {
-                return null;
+
+            if ($module->useGroupWatchlist) {
+                $watchlistModel = static::getOneWatchlistByUserGroups($module->groupWatchlist);
+            } else {
+                $watchlistModel = static::findOnePublishedByPid($user->id, 1);
             }
-            Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, $watchlistModel->id);
         }
+
+        if (null === $watchlistModel) {
+            return null;
+        }
+
+        Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, $watchlistModel->id);
 
         return $watchlistModel;
     }
 
     /**
+     * @param int $moduleId
+     *
      * @return array|\Model|null
      */
-    public static function getMultipleWatchlistModel()
+    public static function getMultipleWatchlistModel(int $moduleId)
     {
         if (FE_USER_LOGGED_IN === true) {
-            $watchlistModel = static::getMultipleWatchlistModelByUser(\FrontendUser::getInstance());
+            $watchlistModel = static::getMultipleWatchlistModelByUser(\FrontendUser::getInstance(), $moduleId);
         } else {
             $watchlistModel = static::getMultipleWatchlistModelBySession();
         }
@@ -331,13 +354,13 @@ class WatchlistModel extends \Contao\Model
     }
 
     /**
-     * @param integer $id
+     * @param $id
      *
-     * @return mixed|static
+     * @return WatchlistModel|mixed
      */
     public static function getWatchlistModelByUserId($id)
     {
-        $watchlistModel = static::findPublishedByPid($id);
+        $watchlistModel = static::findOnePublishedByPid($id);
         if ($watchlistModel === null) {
             $strName        = FE_USER_LOGGED_IN ? WATCHLIST_SESSION_FE : WATCHLIST_SESSION_BE;
             $watchlistModel = static::createWatchlist($strName, \FrontendUser::getInstance()->id);

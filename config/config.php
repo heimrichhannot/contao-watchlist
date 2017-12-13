@@ -1,5 +1,10 @@
 <?php
 
+// session keys
+define('WATCHLIST_SESSION', 'WATCHLIST');
+define('WATCHLIST_SESSION_FE', 'WATCHLIST_SESSION_FE');
+define('WATCHLIST_SESSION_BE', 'WATCHLIST_SESSION_BE');
+
 /**
  * Models
  */

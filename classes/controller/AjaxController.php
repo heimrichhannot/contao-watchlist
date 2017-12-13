@@ -210,7 +210,7 @@ class AjaxController extends Controller
 
         $watchlist = new Watchlist();
         if ($module->useMultipleWatchlist) {
-            $watchlistModel    = WatchlistModel::getMultipleWatchlistModel();
+            $watchlistModel    = WatchlistModel::getMultipleWatchlistModel($moduleId);
             $watchlistTemplate = $watchlist->getMultipleWatchlist($watchlistModel, $moduleId);
         } else {
             $watchlistModel    = WatchlistModel::getWatchlistModel();
