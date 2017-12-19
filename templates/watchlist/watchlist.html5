@@ -7,5 +7,10 @@
                 <?php echo $item; ?>
             <?php endforeach; ?>
         </div>
+        <?php if (!empty($this->downloadLinkAction)) : ?>
+            <div class="watchlist-download-link-container">
+                <?= $this->downloadLinkAction; ?>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>

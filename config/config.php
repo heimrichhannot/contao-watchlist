@@ -44,7 +44,7 @@ $GLOBALS['AJAX'][\HeimrichHannot\Watchlist\Watchlist::XHR_GROUP] = [
             ],
             'optional'  => [],
         ],
-        \HeimrichHannot\Watchlist\Watchlist::XHR_WATCHLIST_UPDATE_MODAL_ACTION        => [
+        \HeimrichHannot\Watchlist\Watchlist::XHR_WATCHLIST_UPDATE_MODAL_ADD_ACTION    => [
             'arguments' => [
                 \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_ID,
             ],

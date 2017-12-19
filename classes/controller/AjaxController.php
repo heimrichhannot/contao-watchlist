@@ -23,7 +23,7 @@ class AjaxController extends Controller
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DELETE_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_SELECT_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DELETE_ALL_ACTION, $this);
-        Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_UPDATE_MODAL_ACTION, $this);
+        Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_UPDATE_MODAL_ADD_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_LINK_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_MULTIPLE_SELECT_ADD_ACTION, $this);
@@ -56,6 +56,7 @@ class AjaxController extends Controller
 
         $watchlistController = new WatchlistController();
         $watchlistModel      = $watchlistController->addMultipleWatchlist($name, $durability);
+        Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, $watchlistModel->id);
         if ($watchlistModel === null) {
             $notification = $watchlist->getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_watchlist_error'], $watchlist), Watchlist::NOTIFY_STATUS_ERROR);
             $objResponse->setResult(new ResponseData(['id' => $id, 'notification' => $notification]));
@@ -148,11 +149,11 @@ class AjaxController extends Controller
         return $objResponse;
     }
 
-    public function watchlistUpdateModalAction($id)
+    public function watchlistUpdateModalAddAction($id)
     {
         $watchlist   = new Watchlist();
         $objResponse = new ResponseSuccess();
-        $objResponse->setResult(new ResponseData($watchlist->getSelectAction($id)));
+        $objResponse->setResult(new ResponseData(['select' => $watchlist->getSelectAction($id), 'empty' => $watchlist->watchlistExists()]));
 
         return $objResponse;
     }

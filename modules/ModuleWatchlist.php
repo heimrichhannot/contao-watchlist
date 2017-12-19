@@ -60,13 +60,10 @@ class ModuleWatchlist extends \Module
             $this->Template->watchlist = $watchlist->getMultipleWatchlist($watchlistModel, $this->id);
         } else {
             $watchlistModel            = WatchlistModel::getWatchlistModel();
-            $this->Template->watchlist = $watchlist->getWatchlist($watchlistModel, $this->id);
+            $this->Template->watchlist = $watchlist->getSingleWatchlist($watchlistModel, $this->id);
         }
         if ($watchlistModel !== null) {
             $count = $watchlistModel->countItems();
-        }
-        if ($this->useDownloadLink) {
-            $this->Template->downloadLinkAction = $watchlist->getDownloadLinkAction($this->downloadLink);
         }
         $this->Template->watchlistHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['headline'];
         $this->Template->close             = $GLOBALS['TL_LANG']['WATCHLIST']['closeLink'];

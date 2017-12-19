@@ -1,11 +1,9 @@
 <div class="watchlist-body">
     <div class="watchlist-actions">
-        <div class="watchlist-select-container">
-            <div class="form-group">
-                <select id="watchlist-selector" data-watchlist-select-action="<?= $this->action ?>">
-                    <?php if (empty($this->select)): ?>
-                        <option value="0"> -</option>
-                    <?php else: ?>
+        <?php if (!empty($this->select)): ?>
+            <div class="watchlist-select-container">
+                <div class="form-group">
+                    <select id="watchlist-selector" data-watchlist-select-action="<?= $this->action ?>">
                         <?php foreach ($this->select as $key => $value): ?>
                             <?php if ($key === intval($this->selected)): ?>
                                 <option value="<?= $key ?>" selected> <?= $value ?></option>
@@ -13,12 +11,15 @@
                                 <option value="<?= $key ?>"> <?= $value ?></option>
                             <?php endif ?>
                         <?php endforeach; ?>
-                    <?php endif ?>
-                </select>
+                    </select>
+                </div>
             </div>
-        </div>
+        <?php endif ?>
         <div class="watchlist-global-actions">
-            <?= $this->actions; ?>
+            <div class="watchlist-delete-download-action">
+                <?= $this->deleteWatchlistAction; ?>
+                <?= $this->downloadAllAction; ?>
+            </div>
         </div>
     </div>
     <div class="watchlist-container">

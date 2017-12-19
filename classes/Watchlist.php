@@ -12,8 +12,6 @@ namespace HeimrichHannot\Watchlist;
 use Contao\ModuleModel;
 use Contao\Session;
 use HeimrichHannot\Ajax\AjaxAction;
-use HeimrichHannot\Haste\Util\Url;
-use HeimrichHannot\Request\Request;
 
 class Watchlist
 {
@@ -24,7 +22,7 @@ class Watchlist
     const XHR_WATCHLIST_DELETE_ALL_ACTION          = 'watchlistDeleteAllAction';
     const XHR_WATCHLIST_UPDATE_ACTION              = 'watchlistUpdateAction';
     const XHR_WATCHLIST_SELECT_ACTION              = 'watchlistSelectAction';
-    const XHR_WATCHLIST_UPDATE_MODAL_ACTION        = 'watchlistUpdateModalAction';
+    const XHR_WATCHLIST_UPDATE_MODAL_ADD_ACTION    = 'watchlistUpdateModalAddAction';
     const XHR_WATCHLIST_DOWNLOAD_ALL_ACTION        = 'watchlistDownloadAllAction';
     const XHR_WATCHLIST_DOWNLOAD_LINK_ACTION       = 'watchlistDownloadLinkAction';
     const XHR_WATCHLIST_MULTIPLE_ADD_ACTION        = 'watchlistMultipleAddAction';
@@ -51,15 +49,32 @@ class Watchlist
      */
     public function getSelectAction($id, $groups = false)
     {
-        $select = WatchlistModel::getAllWatchlistsByCurrentUser(true, $groups);
-
+        $select   = WatchlistModel::getAllWatchlistsByCurrentUser(true, $groups);
+        $selected = Session::getInstance()->get(static::WATCHLIST_SELECT);
+        if (empty($selected)) {
+            $selected = 0;
+        }
         $objT                  = new \FrontendTemplate('watchlist_select_actions');
-        $objT->href            = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_UPDATE_MODAL_ACTION);
         $objT->select          = $select;
         $objT->id              = $id;
+        $objT->selected        = $selected;
         $objT->selectWatchlist = $GLOBALS['TL_LANG']['WATCHLIST']['selectWatchlist'];
 
         return $objT->parse();
+    }
+
+    /**
+     * @return bool
+     */
+    public function watchlistExists()
+    {
+        $watchlists = WatchlistModel::getAllWatchlistsByCurrentUser(false);
+
+        if (empty($watchlists)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -142,6 +157,7 @@ class Watchlist
             $objT->durabilityLabel = $GLOBALS['TL_LANG']['WATCHLIST']['durability']['label'];
         }
 
+        $objT->href            = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_UPDATE_MODAL_ADD_ACTION);
         $objT->addHref         = \HeimrichHannot\Ajax\AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_MULTIPLE_ADD_ACTION, ['id' => $strUuid, 'cid' => $arrData['id'], 'type' => $arrData['type'], 'pageID' => $objPage->id, 'title' => $arrData['name']]);
         $objT->selectAddHref   = \HeimrichHannot\Ajax\AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_MULTIPLE_SELECT_ADD_ACTION, ['id' => $strUuid, 'cid' => $arrData['id'], 'type' => $arrData['type'], 'pageID' => $objPage->id, 'title' => $arrData['name']]);
         $objT->addTitle        = $GLOBALS['TL_LANG']['WATCHLIST']['addTitle'];
@@ -189,6 +205,36 @@ class Watchlist
         $objT->delAllHref  = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_DELETE_ALL_ACTION);
         $objT->delAllLink  = $GLOBALS['TL_LANG']['WATCHLIST']['delAllLink'];
         $objT->delAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delAllTitle'];
+
+        // set id to 0, to get the current watchlist id from session
+        $objT->downloadAllHref  = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, ['id' => 0]);
+        $objT->downloadAllLink  = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllLink'];
+        $objT->downloadAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllTitle'];
+        $objT->useDownloadLink  = false;
+
+        return $objT->parse();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDeleteWatchlistAction()
+    {
+        $objT = new \FrontendTemplate('watchlist_delete_watchlist_action');
+
+        $objT->delAllHref  = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_DELETE_ALL_ACTION);
+        $objT->delAllLink  = $GLOBALS['TL_LANG']['WATCHLIST']['delAllLink'];
+        $objT->delAllTitle = $GLOBALS['TL_LANG']['WATCHLIST']['delAllTitle'];
+
+        return $objT->parse();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDownloadAllAction()
+    {
+        $objT = new \FrontendTemplate('watchlist_download_all_action');
 
         // set id to 0, to get the current watchlist id from session
         $objT->downloadAllHref  = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, ['id' => 0]);
@@ -258,40 +304,72 @@ class Watchlist
         $objT->selected = Session::getInstance()->get(static::WATCHLIST_SELECT);
         $items          = WatchlistItemModel::findBy('pid', $watchlist->id);
 
-        $objT->actions = Watchlist::getGlobalActions();
+        $objT->deleteWatchlistAction = $this->getDeleteWatchlistAction();
         if ($items == null || $items->count() <= 0) {
-            $objT->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
+            $objT->empty = $GLOBALS['TL_LANG']['WATCHLIST_ITEMS']['empty'];
 
             return $objT->parse();
         }
-        $objT->watchlist = $this->getWatchlist($watchlist, $moduleId, false);
+        foreach ($items as $item) {
+            if ($item->type == WatchlistItemModel::WATCHLIST_ITEM_TYPE_DOWNLOAD) {
+                $objT->downloadAllAction = $this->getDownloadAllAction();
+                break;
+            }
+        }
+        $objT->watchlist = $this->getWatchlist($module, $items, false);
 
         return $objT->parse();
     }
 
     /**
-     * @param      $watchlist
-     * @param      $moduleId
-     * @param bool $grouped
+     * @param integer $moduleId
      *
      * @return string
      */
-    public function getWatchlist($watchlist, $moduleId, $grouped = true)
+    public function getSingleWatchlist($watchlist, $moduleId)
     {
-        $objT   = new \FrontendTemplate($grouped ? 'watchlist_grouped' : 'watchlist');
-        $module = ModuleModel::findById($moduleId);
+        $objT = new \FrontendTemplate('watchlist_single');
 
-        if ($watchlist == null || $module == null) {
+        $objT->action            = AjaxAction::generateUrl(static::XHR_GROUP, static::XHR_WATCHLIST_SELECT_ACTION);
+        $objT->watchlistHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['headline'];
+        $module                  = ModuleModel::findById($moduleId);
+
+        if ($watchlist == null || $module === null) {
             $objT->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
 
             return $objT->parse();
         }
-
-        $items = WatchlistItemModel::findBy('pid', $watchlist->id);
+        $items                       = WatchlistItemModel::findBy('pid', $watchlist->id);
+        $objT->deleteWatchlistAction = $this->getDeleteWatchlistAction();
         if ($items == null || $items->count() <= 0) {
-            $objT->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
+            $objT->empty = $GLOBALS['TL_LANG']['WATCHLIST_ITEMS']['empty'];
 
             return $objT->parse();
+        }
+        foreach ($items as $item) {
+            if ($item->type == WatchlistItemModel::WATCHLIST_ITEM_TYPE_DOWNLOAD) {
+                $objT->downloadAllAction = $this->getDownloadAllAction();
+                break;
+            }
+        }
+        $objT->watchlist = $this->getWatchlist($module, $items, false);
+
+        return $objT->parse();
+    }
+
+    /**
+     * @param      $module
+     * @param      $items
+     * @param bool $grouped
+     *
+     * @return string
+     */
+    public function getWatchlist($module, $items, $grouped = true)
+    {
+        $objT = new \FrontendTemplate($grouped ? 'watchlist_grouped' : 'watchlist');
+
+        if ($module->useDownloadLink) {
+            $objT->downloadLinkAction = $this->getDownloadLinkAction($module->downloadLink);
         }
 
         $preparedWatchlistItems = $this->prepareWatchlistItems($items, $module, $grouped);

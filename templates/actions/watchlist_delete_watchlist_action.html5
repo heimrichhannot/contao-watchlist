@@ -1,0 +1,3 @@
+<div class="watchlist-delete-all">
+    <button data-watchlist-delete-all-action="<?php echo $this->delAllHref; ?>" data-notify="#watchlist-notify" data-badge="#watchlist-badge" data-update="#watchlist .watchlist-body" data-action="watchlist-update" class="watchlist-delete-all-button btn btn-default" title="<?php echo $this->delAllTitle; ?>"><span><?php echo $this->delAllLink; ?></span></button>
+</div>

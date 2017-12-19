@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.13] - 2017-12-19
+
+### Fixed
+- don't show `download all button` if there is no watchlist item to download
+- don't show `download link button` if there is no watchlist item
+- don't show anything if there is no watchlist
+- if no watchlist exists when adding an item there is only the option `create new watchlist`
+
+### Added
+- new created watchlist always selected
+
+### Changed
+- changed durability to date when watchlist ends
+
 ## [2.0.12] - 2017-12-12
 
 ### fixed

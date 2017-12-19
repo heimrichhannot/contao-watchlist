@@ -1,7 +1,9 @@
 <?php $this->extend('block_unsearchable'); ?>
 
 <?php $this->block('content'); ?>
+<?php if (!$this->headline): ?>
     <h1><?= $this->downloadListHeadline ?></h1>
+<?php endif; ?>
 <?php if ($this->empty): ?>
     <p><?= $this->empty; ?></p>
 <?php else: ?>
@@ -10,6 +12,8 @@
             <?= $item; ?>
         <?php endforeach; ?>
     </div>
-    <button data-watchlist-download-all-action="<?= $this->downloadAllHref; ?>" class="watchlist-download-all-button btn btn-primary watchlist-download-list-download-all" title="<?= $this->downloadAllTitle; ?>"><span><?= $this->downloadAllLink; ?></span></button>
+    <?php if ($this->downloadAllButton === true): ?>
+        <button data-watchlist-download-all-action="<?= $this->downloadAllHref; ?>" class="watchlist-download-all-button btn btn-primary watchlist-download-list-download-all" title="<?= $this->downloadAllTitle; ?>"><span><?= $this->downloadAllLink; ?></span></button>
+    <?php endif; ?>
 <?php endif; ?>
 <?php $this->endblock(); ?>

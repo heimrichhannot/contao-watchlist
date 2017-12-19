@@ -30,7 +30,7 @@
                         Watchlist.showNotification(data.result.html.notification);
                         $('#watchlistModal-' + data.result.html.id).modal('hide');
                         Watchlist.watchlistUpdate();
-                    }
+                    },
                 });
             });
         },
@@ -48,7 +48,7 @@
                         Watchlist.showNotification(data.result.html.notification);
                         $('#watchlistModal-' + data.result.html.id).modal('hide');
                         Watchlist.watchlistUpdate();
-                    }
+                    },
                 });
             });
         },
@@ -69,14 +69,13 @@
                         $('#watchlist-add-' + data.result.html.id).addClass('watchlist-delete-item watchlist-added');
                         Watchlist.showNotification(data.result.html.notification);
                         Watchlist.watchlistUpdate();
-                    }
+                    },
                 });
             });
         },
         registerWatchlistModal: function() {
             $(document).on('click', '.watchlist-add-modal', function() {
-                $('#watchlistModal-' + $(this).data('id')).modal('toggle');
-                Watchlist.updateModalSelect($(this).data('id'));
+                Watchlist.updateModalAdd($(this).data('id'));
             });
 
             $(document).on('click', '.watchlist-show-modal', function() {
@@ -93,7 +92,7 @@
                         $('#watchlist-add-' + data.result.html.id).addClass('watchlist-add');
                         Watchlist.showNotification(data.result.html.notification);
                         Watchlist.watchlistUpdate();
-                    }
+                    },
                 });
             });
         },
@@ -106,7 +105,7 @@
                         $('.watchlist-added').removeClass('watchlist-delete-item watchlist-added');
                         Watchlist.showNotification(data.result.html.notification);
                         Watchlist.watchlistUpdate();
-                    }
+                    },
                 });
             });
         },
@@ -119,7 +118,7 @@
                     $('.watchlist-download-link-href').html('&nbsp;');
                     $('.watchlist-download-link-text').removeClass('active');
                     $('.watchlist-loader').hide();
-                }
+                },
             });
         },
         registerWatchlistSelect: function() {
@@ -128,16 +127,34 @@
                     url: $('#watchlist-selector').data('watchlistSelectAction') + '&id=' + $('#watchlist-selector').find(':selected').val(),
                     success: function(data, textStatus, jqXHR) {
                         Watchlist.watchlistUpdate();
-                    }
+                    },
                 });
             });
         },
-        updateModalSelect: function(id) {
+        updateModalAdd: function(id) {
             $.ajax({
-                url: $('#watchlist-select-input-' + id).data('watchlistUpdateModalAction') + '&id=' + id,
+                url: $('.watchlist-add-modal').data('watchlistUpdateModalAddAction') + '&id=' + id,
                 success: function(data, textStatus, jqXHR) {
-                    $('.watchlist-select-action-' + id).html(data.result.html);
-                }
+                    if (data.result.html.empty) {
+                        $selectWatchlist = $('#selectWatchlist-' + id);
+                        $newWatchlist = $('#newWatchlist-' + id);
+                        $selectWatchlist.removeClass('active');
+                        $selectWatchlist.addClass('hidden');
+                        $newWatchlist.addClass('active');
+                        $('#menu2-' + id).removeClass('active');
+                        $('#menu1-' + id).addClass('in active');
+                    } else {
+                        $selectWatchlist = $('#selectWatchlist-' + id);
+                        $newWatchlist = $('#newWatchlist-' + id);
+                        $selectWatchlist.removeClass('hidden');
+                        $selectWatchlist.addClass('active');
+                        $newWatchlist.removeClass('active');
+                        $('#menu1-' + id).removeClass('active');
+                        $('#menu2-' + id).addClass('in active');
+                        $('.watchlist-select-action-' + id).html(data.result.html.select);
+                    }
+                    $('#watchlistModal-' + id).modal('toggle');
+                },
             });
         },
         registerDownloadAll: function() {
@@ -150,7 +167,7 @@
                             link.href = data.result.html;
                             link.click();
                         }
-                    }
+                    },
                 });
             });
         },
@@ -164,10 +181,10 @@
                             $('.watchlist-download-link-href').html(data.result.html);
                             $('.watchlist-download-link-text').addClass('active');
                         }
-                    }
+                    },
                 });
             });
-        }
+        },
     };
 
     $(document).ready(function() {

@@ -1,0 +1,17 @@
+<div class="watchlist-body">
+    <div class="watchlist-actions">
+        <div class="watchlist-global-actions">
+            <div class="watchlist-delete-download-action">
+                <?= $this->deleteWatchlistAction; ?>
+                <?= $this->downloadAllAction; ?>
+            </div>
+        </div>
+    </div>
+    <div class="watchlist-container">
+        <?php if ($this->empty): ?>
+            <p><?php echo $this->empty; ?></p>
+        <?php else: ?>
+            <?= $this->watchlist ?>
+        <?php endif; ?>
+    </div>
+</div>

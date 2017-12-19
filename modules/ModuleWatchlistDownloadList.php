@@ -55,20 +55,27 @@ class ModuleWatchlistDownloadList extends \Module
             $objHandler = new $GLOBALS['TL_PTY']['error_404']();
             $objHandler->generate($objPage->id);
         }
-        $items = $this->getWatchlistItems($watchlist);
-        if (empty($items)) {
+        $array = $this->getWatchlistItems($watchlist);
+        if (empty($array['items'])) {
             $this->Template->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
         }
-        $this->Template->items                = $items;
+        $this->Template->downloadAllButton    = $array['downloadAllButton'];
+        $this->Template->items                = $array['items'];
         $this->Template->downloadAllHref      = AjaxAction::generateUrl(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, ['id' => $watchlist->id]);
         $this->Template->downloadAllLink      = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAll'];
         $this->Template->downloadAllTitle     = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllSecondTitle'];
         $this->Template->downloadListHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['downloadListHeadline'];
     }
 
+    /**
+     * @param $watchlist
+     *
+     * @return array
+     */
     public function getWatchlistItems($watchlist)
     {
-        $arrItems = [];
+        $arrItems          = [];
+        $downloadAllButton = false;
 
         if ($watchlist === null) {
             return $arrItems;
@@ -78,12 +85,14 @@ class ModuleWatchlistDownloadList extends \Module
         if ($items === null) {
             return $arrItems;
         }
-
         foreach ($items as $item) {
+            if ($item->type == WatchlistItemModel::WATCHLIST_ITEM_TYPE_DOWNLOAD) {
+                $downloadAllButton = true;
+            }
             $arrItems[] = $this->prepareItem($item);
         }
 
-        return $arrItems;
+        return ['items' => $arrItems, 'downloadAllButton' => $downloadAllButton];
     }
 
     public function prepareItem($item)

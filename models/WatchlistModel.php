@@ -64,12 +64,12 @@ class WatchlistModel extends \Contao\Model
                     $watchlistArray[$value->id] = $value->name . ' ( ' . $GLOBALS['TL_LANG']['WATCHLIST']['durability']['immortal'] . ' )';
                     continue;
                 }
-                $durability = ceil(($value->stop - time()) / (60 * 60 * 24));
-                if (intval($durability) < 0) {
+                $durability = date('d.m.Y', $value->stop);
+                if ($durability > date('d.m.Y', time())) {
                     static::unsetWatchlist($value->id);
                     continue;
                 }
-                $watchlistArray[$value->id] = $value->name . ' ( ' . $durability . $GLOBALS['TL_LANG']['WATCHLIST']['durability']['days'] . ' )';
+                $watchlistArray[$value->id] = $value->name . ' ( ' . $durability . ' )';
             } else {
                 $watchlistArray[$value->id] = $value->name;
             }

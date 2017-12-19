@@ -25,7 +25,8 @@ $GLOBALS['TL_LANG']['WATCHLIST']['closeLink']  = 'Schliessen';
 /**
  * Text
  */
-$GLOBALS['TL_LANG']['WATCHLIST']['empty']                = 'Keine Elemente vorhanden';
+$GLOBALS['TL_LANG']['WATCHLIST']['empty']                = 'Keine Merkliste vorhanden';
+$GLOBALS['TL_LANG']['WATCHLIST_ITEMS']['empty']          = 'Keine Elemente vorhanden';
 $GLOBALS['TL_LANG']['WATCHLIST']['headline']             = 'Ihre Merkliste';
 $GLOBALS['TL_LANG']['WATCHLIST']['newWatchlist']         = 'Neue Merkliste anlegen';
 $GLOBALS['TL_LANG']['WATCHLIST']['selectWatchlist']      = 'Merkliste auswählen';
@@ -38,7 +39,7 @@ $GLOBALS['TL_LANG']['WATCHLIST']['downloadListHeadline'] = 'Beispieltitel';
 /**
  * durability of a watchlist
  */
-$GLOBALS['TL_LANG']['WATCHLIST']['durability']['label']    = 'Lebensdauer: ';
+$GLOBALS['TL_LANG']['WATCHLIST']['durability']['label']    = 'Lebensdauer ';
 $GLOBALS['TL_LANG']['WATCHLIST']['durability']['days']     = ' Tage';
 $GLOBALS['TL_LANG']['WATCHLIST']['durability']['default']  = '30 Tage';
 $GLOBALS['TL_LANG']['WATCHLIST']['durability']['immortal'] = 'Unendlich';

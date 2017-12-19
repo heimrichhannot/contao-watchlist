@@ -25,11 +25,6 @@
                     <?= $this->watchlist ?>
                 </div>
             </div>
-            <?php if (!empty($this->downloadLinkAction)) : ?>
-                <div class="modal-footer">
-                    <?= $this->downloadLinkAction; ?>
-                </div>
-            <?php endif; ?>
         </div>
     </div>
 </div>
