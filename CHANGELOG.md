@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - new created watchlist always selected
+- added `watchlist_single.html5` template
 
 ### Changed
 - changed durability to date when watchlist ends
