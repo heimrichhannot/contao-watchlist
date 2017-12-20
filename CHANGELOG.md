@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2017-12-20
+
+### Fixed
+- modal in IE
+
+### Added
+- added hook in parseItem in ModuleWatchlistDownloadList
+
 ## [2.0.13] - 2017-12-19
 
 ### Fixed

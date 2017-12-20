@@ -11,6 +11,7 @@ namespace HeimrichHannot\Watchlist;
 
 use Contao\FrontendTemplate;
 use HeimrichHannot\Ajax\AjaxAction;
+use HeimrichHannot\Request\Request;
 use HeimrichHannot\Watchlist\Controller\WatchlistController;
 
 class ModuleWatchlistDownloadList extends \Module
@@ -31,8 +32,8 @@ class ModuleWatchlistDownloadList extends \Module
         }
         $GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js|static';
 
-        if (\Input::get('file')) {
-            \Contao\Controller::sendFileToBrowser(\Input::get('file'));
+        if (Request::getGet('file')) {
+            \Contao\Controller::sendFileToBrowser(Request::getGet('file'));
         }
 
         if (!\Input::get('watchlist')) {
@@ -49,7 +50,7 @@ class ModuleWatchlistDownloadList extends \Module
         global $objPage;
 
         $id        = \Input::get('watchlist');
-        $watchlist = WatchlistModel::findBy(['uuid=?', 'published=?'], [$id, '1']);
+        $watchlist = WatchlistModel::findOneBy(['uuid=?', 'published=?'], [$id, '1']);
         if (!$this->checkWatchlistValidity($watchlist)) {
             /** @var \PageError404 $objHandler */
             $objHandler = new $GLOBALS['TL_PTY']['error_404']();
@@ -59,9 +60,10 @@ class ModuleWatchlistDownloadList extends \Module
         if (empty($array['items'])) {
             $this->Template->empty = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
         }
+        $watchlistController                  = new WatchlistController();
         $this->Template->downloadAllButton    = $array['downloadAllButton'];
         $this->Template->items                = $array['items'];
-        $this->Template->downloadAllHref      = AjaxAction::generateUrl(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, ['id' => $watchlist->id]);
+        $this->Template->downloadAllHref      = $watchlistController->downloadAll($watchlist);
         $this->Template->downloadAllLink      = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAll'];
         $this->Template->downloadAllTitle     = $GLOBALS['TL_LANG']['WATCHLIST']['downloadAllSecondTitle'];
         $this->Template->downloadListHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['downloadListHeadline'];
@@ -143,7 +145,7 @@ class ModuleWatchlistDownloadList extends \Module
         }
         $copyright = null;
 
-        if ($objFileModel->copyright !== null) {
+        if ($objFileModel->copyright !== null && deserialize($objFileModel->copyright, true)[0] !== null) {
             $copyright = deserialize($objFileModel->copyright, true);
         }
 
@@ -154,6 +156,14 @@ class ModuleWatchlistDownloadList extends \Module
         $objT->downloadLink  = $basePath . '&file=' . $objFile->path;
         $objT->downloadTitle = $GLOBALS['TL_LANG']['WATCHLIST']['download'];
         $objT->noDownload    = $GLOBALS['TL_LANG']['WATCHLIST']['noDownload'];
+
+        // HOOK: add custom logic
+        if (isset($GLOBALS['TL_HOOKS']['parseItems']) && is_array($GLOBALS['TL_HOOKS']['parseItems'])) {
+            foreach ($GLOBALS['TL_HOOKS']['parseItems'] as $callback) {
+                $this->import($callback[0]);
+                $this->{$callback[0]}->{$callback[1]}($objT, $item, $this);
+            }
+        }
 
         return $objT->parse();
     }

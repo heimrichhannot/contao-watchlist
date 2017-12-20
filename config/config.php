@@ -38,12 +38,6 @@ $GLOBALS['AJAX'][\HeimrichHannot\Watchlist\Watchlist::XHR_GROUP] = [
             ],
             'optional'  => [],
         ],
-        \HeimrichHannot\Watchlist\Watchlist::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION        => [
-            'arguments' => [
-                \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_ID,
-            ],
-            'optional'  => [],
-        ],
         \HeimrichHannot\Watchlist\Watchlist::XHR_WATCHLIST_UPDATE_MODAL_ADD_ACTION    => [
             'arguments' => [
                 \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_ID,
@@ -103,6 +97,22 @@ $GLOBALS['AJAX'][\HeimrichHannot\Watchlist\Watchlist::XHR_GROUP] = [
                 \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_PAGE,
                 \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_TITLE,
                 \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_NAME,
+            ],
+            'optional'  => [],
+        ],
+        \HeimrichHannot\Watchlist\Watchlist::XHR_WATCHLIST_SHOW_MODAL_ACTION          => [
+            'arguments' => [
+                \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_MODULE_ID,
+            ],
+            'optional'  => [],
+        ],
+        \HeimrichHannot\Watchlist\Watchlist::XHR_WATCHLIST_SHOW_MODAL_ADD_ACTION      => [
+            'arguments' => [
+                \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_ID,
+                \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_CID,
+                \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_TYPE,
+                \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_PAGE,
+                \HeimrichHannot\Watchlist\Watchlist::XHR_PARAMETER_WATCHLIST_ITEM_TITLE,
             ],
             'optional'  => [],
         ],

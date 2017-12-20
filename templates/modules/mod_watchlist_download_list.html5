@@ -13,7 +13,7 @@
         <?php endforeach; ?>
     </div>
     <?php if ($this->downloadAllButton === true): ?>
-        <button data-watchlist-download-all-action="<?= $this->downloadAllHref; ?>" class="watchlist-download-all-button btn btn-primary watchlist-download-list-download-all" title="<?= $this->downloadAllTitle; ?>"><span><?= $this->downloadAllLink; ?></span></button>
+        <a class="watchlist-download-all-button btn btn-primary watchlist-download-list-download-all" title="<?= $this->downloadAllTitle; ?>" href="<?= $this->downloadAllHref; ?>"><?= $this->downloadAllLink; ?></a>
     <?php endif; ?>
 <?php endif; ?>
 <?php $this->endblock(); ?>

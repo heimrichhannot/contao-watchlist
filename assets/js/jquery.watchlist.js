@@ -8,7 +8,6 @@
             this.registerDeleteAll();
             this.registerWatchlistModal();
             this.registerWatchlistSelect();
-            this.registerDownloadAll();
             this.registerDownloadLink();
             this.registerMultipleSelectAdd();
         },
@@ -29,7 +28,6 @@
                     success: function(data, textStatus, jqXHR) {
                         Watchlist.showNotification(data.result.html.notification);
                         $('#watchlistModal-' + data.result.html.id).modal('hide');
-                        Watchlist.watchlistUpdate();
                     },
                 });
             });
@@ -47,7 +45,6 @@
                     success: function(data, textStatus, jqXHR) {
                         Watchlist.showNotification(data.result.html.notification);
                         $('#watchlistModal-' + data.result.html.id).modal('hide');
-                        Watchlist.watchlistUpdate();
                     },
                 });
             });
@@ -68,18 +65,32 @@
                         $('#watchlist-add-' + data.result.html.id).removeClass('watchlist-add');
                         $('#watchlist-add-' + data.result.html.id).addClass('watchlist-delete-item watchlist-added');
                         Watchlist.showNotification(data.result.html.notification);
-                        Watchlist.watchlistUpdate();
                     },
                 });
             });
         },
         registerWatchlistModal: function() {
             $(document).on('click', '.watchlist-add-modal', function() {
-                Watchlist.updateModalAdd($(this).data('id'));
+                var btn = $(this);
+                $('#watchlistModal-' + btn.data('id')).remove();
+                $.ajax({
+                    url: $('#watchlist-add-modal-' + btn.data('id')).data('watchlistShowModalAddAction'),
+                    success: function(data, textStatus, jqXHR) {
+                        $('body').append(data.result.html.modal);
+                        $('#watchlistModal-' + data.result.html.id).modal('toggle');
+                    },
+                });
             });
 
             $(document).on('click', '.watchlist-show-modal', function() {
-                $('#watchlistModal').modal('toggle');
+                $('#watchlistModal').remove();
+                $.ajax({
+                    url: $('.watchlist-show-modal').data('watchlistShowModalAction'),
+                    success: function(data, textStatus, jqXHR) {
+                        $('body').append(data.result.html);
+                        $('#watchlistModal').modal('toggle');
+                    },
+                });
             });
         },
         registerDelete: function() {
@@ -127,46 +138,6 @@
                     url: $('#watchlist-selector').data('watchlistSelectAction') + '&id=' + $('#watchlist-selector').find(':selected').val(),
                     success: function(data, textStatus, jqXHR) {
                         Watchlist.watchlistUpdate();
-                    },
-                });
-            });
-        },
-        updateModalAdd: function(id) {
-            $.ajax({
-                url: $('.watchlist-add-modal').data('watchlistUpdateModalAddAction') + '&id=' + id,
-                success: function(data, textStatus, jqXHR) {
-                    if (data.result.html.empty) {
-                        $selectWatchlist = $('#selectWatchlist-' + id);
-                        $newWatchlist = $('#newWatchlist-' + id);
-                        $selectWatchlist.removeClass('active');
-                        $selectWatchlist.addClass('hidden');
-                        $newWatchlist.addClass('active');
-                        $('#menu2-' + id).removeClass('active');
-                        $('#menu1-' + id).addClass('in active');
-                    } else {
-                        $selectWatchlist = $('#selectWatchlist-' + id);
-                        $newWatchlist = $('#newWatchlist-' + id);
-                        $selectWatchlist.removeClass('hidden');
-                        $selectWatchlist.addClass('active');
-                        $newWatchlist.removeClass('active');
-                        $('#menu1-' + id).removeClass('active');
-                        $('#menu2-' + id).addClass('in active');
-                        $('.watchlist-select-action-' + id).html(data.result.html.select);
-                    }
-                    $('#watchlistModal-' + id).modal('toggle');
-                },
-            });
-        },
-        registerDownloadAll: function() {
-            $(document).on('click', '.watchlist-download-all-button', function() {
-                $.ajax({
-                    url: $('.watchlist-download-all-button').data('watchlistDownloadAllAction'),
-                    success: function(data, textStatus, jqXHR) {
-                        if (data.result.html !== false) {
-                            var link = document.createElement('a');
-                            link.href = data.result.html;
-                            link.click();
-                        }
                     },
                 });
             });

@@ -13,11 +13,11 @@ namespace HeimrichHannot\Watchlist;
 
 
 use HeimrichHannot\Ajax\AjaxAction;
+use HeimrichHannot\Request\Request;
 use HeimrichHannot\Watchlist\Controller\WatchlistController;
 
 class ModuleWatchlist extends \Module
 {
-
     protected $strTemplate = 'mod_watchlist';
 
     public function generate()
@@ -40,8 +40,8 @@ class ModuleWatchlist extends \Module
             }
         }
 
-        if (\Input::get('file')) {
-            \Contao\Controller::sendFileToBrowser(\Input::get('file'));
+        if (Request::getGet('file')) {
+            \Contao\Controller::sendFileToBrowser(Request::getGet('file'));
         }
 
         $GLOBALS['TL_JAVASCRIPT']['watchlist'] = 'system/modules/watchlist/assets/js/jquery.watchlist.js|static';
@@ -51,25 +51,20 @@ class ModuleWatchlist extends \Module
 
     protected function compile()
     {
-        $watchlist                 = new Watchlist();
         $count                     = 0;
         $this->Template->watchlist = $GLOBALS['TL_LANG']['WATCHLIST']['empty'];
         if ($this->useMultipleWatchlist) {
             /* @var $watchlist WatchlistModel */
-            $watchlistModel            = WatchlistModel::getMultipleWatchlistModel($this->id);
-            $this->Template->watchlist = $watchlist->getMultipleWatchlist($watchlistModel, $this->id);
+            $watchlistModel = WatchlistModel::getMultipleWatchlistModel($this->id);
         } else {
-            $watchlistModel            = WatchlistModel::getWatchlistModel();
-            $this->Template->watchlist = $watchlist->getSingleWatchlist($watchlistModel, $this->id);
+            $watchlistModel = WatchlistModel::getWatchlistModel();
         }
         if ($watchlistModel !== null) {
             $count = $watchlistModel->countItems();
         }
-        $this->Template->watchlistHeadline = $GLOBALS['TL_LANG']['WATCHLIST']['headline'];
-        $this->Template->close             = $GLOBALS['TL_LANG']['WATCHLIST']['closeLink'];
-        $this->Template->count             = $count;
-        $this->Template->cssClass          = $count > 0 ? 'not-empty' : 'empty';
-        $this->Template->toggleLink        = $GLOBALS['TL_LANG']['WATCHLIST']['toggleLink'];
-        $this->Template->updateHref        = AjaxAction::generateUrl(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_UPDATE_ACTION, ['id' => $this->id]);
+        $this->Template->count         = $count;
+        $this->Template->toggleLink    = $GLOBALS['TL_LANG']['WATCHLIST']['toggleLink'];
+        $this->Template->updateHref    = AjaxAction::generateUrl(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_UPDATE_ACTION, ['id' => $this->id]);
+        $this->Template->showModalHref = AjaxAction::generateUrl(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_SHOW_MODAL_ACTION, ['moduleId' => $this->id]);
     }
 }

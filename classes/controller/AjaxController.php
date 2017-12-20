@@ -8,7 +8,9 @@ use Contao\FilesModel;
 use Contao\ModuleModel;
 use Contao\Session;
 use HeimrichHannot\Ajax\Ajax;
+use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Ajax\Response\ResponseData;
+use HeimrichHannot\Ajax\Response\ResponseError;
 use HeimrichHannot\Ajax\Response\ResponseSuccess;
 use HeimrichHannot\Watchlist\Watchlist;
 use HeimrichHannot\Watchlist\WatchlistModel;
@@ -24,9 +26,10 @@ class AjaxController extends Controller
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_SELECT_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DELETE_ALL_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_UPDATE_MODAL_ADD_ACTION, $this);
-        Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_ALL_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_DOWNLOAD_LINK_ACTION, $this);
         Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_MULTIPLE_SELECT_ADD_ACTION, $this);
+        Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_SHOW_MODAL_ACTION, $this);
+        Ajax::runActiveAction(Watchlist::XHR_GROUP, Watchlist::XHR_WATCHLIST_SHOW_MODAL_ADD_ACTION, $this);
     }
 
     public function watchlistUpdateAction($id)
@@ -48,7 +51,7 @@ class AjaxController extends Controller
         $watchlist      = new Watchlist();
 
         if ($watchlistModel !== null) {
-            $notification = $watchlist->getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_watchlist_exists_error'], $watchlist), Watchlist::NOTIFY_STATUS_ERROR);
+            $notification = $watchlist->getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_watchlist_exists_error'], $name), Watchlist::NOTIFY_STATUS_ERROR);
             $objResponse->setResult(new ResponseData(['id' => $id, 'notification' => $notification]));
 
             return $objResponse;
@@ -58,7 +61,7 @@ class AjaxController extends Controller
         $watchlistModel      = $watchlistController->addMultipleWatchlist($name, $durability);
         Session::getInstance()->set(Watchlist::WATCHLIST_SELECT, $watchlistModel->id);
         if ($watchlistModel === null) {
-            $notification = $watchlist->getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_watchlist_error'], $watchlist), Watchlist::NOTIFY_STATUS_ERROR);
+            $notification = $watchlist->getNotifications(sprintf($GLOBALS['TL_LANG']['WATCHLIST']['notify_add_watchlist_error'], $name), Watchlist::NOTIFY_STATUS_ERROR);
             $objResponse->setResult(new ResponseData(['id' => $id, 'notification' => $notification]));
 
             return $objResponse;
@@ -158,23 +161,6 @@ class AjaxController extends Controller
         return $objResponse;
     }
 
-    public function watchlistDownloadAllAction($id)
-    {
-        $watchlistController = new WatchlistController();
-        $objResponse         = new ResponseSuccess();
-        $objResponse->setResult(new ResponseData(false));
-        if ($id === '0') {
-            $id = Session::getInstance()->get(Watchlist::WATCHLIST_SELECT);
-        }
-        $watchlistModel = WatchlistModel::findById($id);
-        if ($watchlistModel === null) {
-            return $objResponse;
-        }
-        $objResponse->setResult(new ResponseData($watchlistController->downloadAll($watchlistModel)));
-
-        return $objResponse;
-    }
-
     public function watchlistDownloadLinkAction($id)
     {
         $objResponse = new ResponseSuccess();
@@ -219,5 +205,43 @@ class AjaxController extends Controller
         }
 
         return $watchlistTemplate;
+    }
+
+    /**
+     * @param $moduleId
+     *
+     * @return ResponseError|ResponseSuccess
+     */
+    public function watchlistShowModalAction($moduleId)
+    {
+        $objResponseError = new ResponseError();
+        if (null === $moduleId) {
+            return $objResponseError;
+        }
+        $watchlist   = new Watchlist();
+        $objResponse = new ResponseSuccess();
+        $objResponse->setResult(new ResponseData($watchlist->getWatchlistModal($moduleId)));
+
+        return $objResponse;
+    }
+
+    /**
+     * @param $moduleId
+     *
+     * @return ResponseError|ResponseSuccess
+     */
+    public function watchlistShowModalAddAction($id, $cid, $type, $pageID, $title)
+    {
+        $data        = [
+            'id'     => $cid,
+            'type'   => $type,
+            'pageID' => $pageID,
+            'title'  => $title,
+        ];
+        $watchlist   = new Watchlist();
+        $objResponse = new ResponseSuccess();
+        $objResponse->setResult(new ResponseData(['modal' => $watchlist->getMultipleWatchlistAddModal($id, $data), 'id' => $id]));
+
+        return $objResponse;
     }
 }
