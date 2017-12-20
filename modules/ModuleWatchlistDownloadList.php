@@ -158,8 +158,8 @@ class ModuleWatchlistDownloadList extends \Module
         $objT->noDownload    = $GLOBALS['TL_LANG']['WATCHLIST']['noDownload'];
 
         // HOOK: add custom logic
-        if (isset($GLOBALS['TL_HOOKS']['parseItems']) && is_array($GLOBALS['TL_HOOKS']['parseItems'])) {
-            foreach ($GLOBALS['TL_HOOKS']['parseItems'] as $callback) {
+        if (isset($GLOBALS['TL_HOOKS']['parseWatchlistItems']) && is_array($GLOBALS['TL_HOOKS']['parseWatchlistItems'])) {
+            foreach ($GLOBALS['TL_HOOKS']['parseWatchlistItems'] as $callback) {
                 $this->import($callback[0]);
                 $this->{$callback[0]}->{$callback[1]}($objT, $item, $this);
             }

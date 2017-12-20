@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2017-12-20
+
+### Fixed
+- renamed Hook
+
+### Added
+- added hook in parseItem in ModuleWatchlistDownloadList
+
 ## [2.1.0] - 2017-12-20
 
 ### Fixed
