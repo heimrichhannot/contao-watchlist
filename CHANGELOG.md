@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2018-06-12
+
+### Fixed
+- fixed check vor durability of a watchlist
+
 ## [2.1.1] - 2017-12-20
 
 ### Fixed

@@ -64,12 +64,11 @@ class WatchlistModel extends \Contao\Model
                     $watchlistArray[$value->id] = $value->name . ' ( ' . $GLOBALS['TL_LANG']['WATCHLIST']['durability']['immortal'] . ' )';
                     continue;
                 }
-                $durability = date('d.m.Y', $value->stop);
-                if ($durability > date('d.m.Y', time())) {
+                if ($value->stop < time()) {
                     static::unsetWatchlist($value->id);
                     continue;
                 }
-                $watchlistArray[$value->id] = $value->name . ' ( ' . $durability . ' )';
+                $watchlistArray[$value->id] = $value->name . ' ( ' .  date('d.m.Y', $value->stop) . ' )';
             } else {
                 $watchlistArray[$value->id] = $value->name;
             }
@@ -158,7 +157,7 @@ class WatchlistModel extends \Contao\Model
             return $watchlist;
         }
         $publicWatchlist = static::findPublished();
-        if ($publicWatchlist == null) {
+        if ($publicWatchlist === null) {
             return $watchlist;
         }
         foreach ($publicWatchlist as $watchlistModel) {
@@ -285,7 +284,7 @@ class WatchlistModel extends \Contao\Model
     {
         $module      = \Contao\ModuleModel::findById($moduleId);
         $watchlistId = Session::getInstance()->get(Watchlist::WATCHLIST_SELECT);
-        if ($watchlistId == null) {
+        if ($watchlistId === null) {
 
             if ($module->useGroupWatchlist) {
                 $watchlistModel = static::getOneWatchlistByUserGroups($module->groupWatchlist);
